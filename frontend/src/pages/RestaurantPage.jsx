@@ -1,5 +1,4 @@
 import React from "react";
-import MenuItemCard from "../components/MenuItemCard";
 import RestaurantCard from "../components/RestaurantCard";
 
 const RestaurantPage = () => {
@@ -27,7 +26,6 @@ const RestaurantPage = () => {
 
   return (
     <div>
-      {/* Restaurants Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">
@@ -45,13 +43,6 @@ const RestaurantPage = () => {
           </div>
         </div>
       </section>
-
-      {/* Footer Section */}
-      <footer className="bg-gray-800 text-white py-6">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2026 Food Delivery. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 };

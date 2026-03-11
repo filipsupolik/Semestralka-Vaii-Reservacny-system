@@ -1,12 +1,7 @@
 import React from "react";
 import MenuItemCard from "../components/MenuItemCard";
-import { FaSearch } from "react-icons/fa";
-import { useParams, useNavigate } from "react-router-dom";
 
 const MenuPage = () => {
-  const navigate = useNavigate();
-  const { restaurantId } = useParams();
-
   // Mock data for menu items
   const menuItems = [
     {
@@ -34,22 +29,6 @@ const MenuPage = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      {/* Header Section */}
-      <header
-        className="bg-white shadow-md shadow-gray-300 relative z-10"
-        style={{ marginBottom: "-20px" }}
-      >
-        <div className="container mx-auto px-4 py-4 flex items-center">
-          <button
-            className="text-red-500 text-2xl font-bold mr-4"
-            onClick={() => navigate(-1)}
-          >
-            ←
-          </button>
-          <h1 className="text-2xl font-bold text-red-500">Restaurant Menu</h1>
-        </div>
-      </header>
-
       <div className="flex flex-row-reverse">
         {/* Shopping Cart Section */}
         <aside className="w-1/4 bg-white shadow-md p-4 h-full">
@@ -97,13 +76,6 @@ const MenuPage = () => {
           </div>
         </section>
       </div>
-
-      {/* Footer Section */}
-      <footer className="bg-gray-800 text-white py-6">
-        <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2026 Food Delivery. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React from "react";
 
-const MenuItemCard = ({ image, name, description, price }) => {
+function MenuItemCard({ image, name, description, price }) {
   return (
     <div className="bg-white shadow-md rounded-lg overflow-hidden">
       <img src={image} alt={name} className="w-full h-48 object-cover" />
@@ -11,6 +11,6 @@ const MenuItemCard = ({ image, name, description, price }) => {
       </div>
     </div>
   );
-};
+}
 
 export default MenuItemCard;

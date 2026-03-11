@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const RestaurantCard = ({ image, name, cuisine }) => {
+function RestaurantCard({ image, name, cuisine }) {
   const navigate = useNavigate();
 
   return (
@@ -16,6 +16,6 @@ const RestaurantCard = ({ image, name, cuisine }) => {
       </div>
     </div>
   );
-};
+}
 
 export default RestaurantCard;

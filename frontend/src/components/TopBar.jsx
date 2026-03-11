@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaUtensils, FaPhone, FaUser } from "react-icons/fa";
 
-const TopBar = ({ title, showBack, showNavigation }) => {
+function TopBar({ title, showBack, showNavigation, onOpenDialog }) {
   const navigate = useNavigate();
 
   return (
@@ -44,7 +44,12 @@ const TopBar = ({ title, showBack, showNavigation }) => {
               </ul>
             </nav>
           )}
-          <button className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 flex items-center">
+          <button
+            className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 flex items-center"
+            onClick={() => {
+              onOpenDialog("login");
+            }}
+          >
             <FaUser className="mr-2" />
             Login
           </button>
@@ -52,6 +57,6 @@ const TopBar = ({ title, showBack, showNavigation }) => {
       </header>
     </div>
   );
-};
+}
 
 export default TopBar;
