@@ -1,5 +1,5 @@
 import React from "react";
-import RestaurantCard from "../components/RestaurantCard";
+import { RestaurantCard, SearchBar } from "../components/index";
 
 const RestaurantPage = () => {
   // Mock data for restaurants
@@ -28,6 +28,7 @@ const RestaurantPage = () => {
     <div>
       <section className="py-16">
         <div className="container mx-auto px-4">
+          <SearchBar></SearchBar>
           <h2 className="text-3xl font-bold text-gray-800 mb-6">
             Choose a Restaurant
           </h2>

@@ -2,8 +2,11 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogActions,
   TextField,
   Button,
+  Box,
+  Stack,
 } from "@mui/material";
 
 function LoginDialog({ isOpen, handleClose }) {
@@ -15,16 +18,23 @@ function LoginDialog({ isOpen, handleClose }) {
       <DialogTitle>Log in</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit}>
-          <TextField label="Email" variant="standard" margin="normal" />
-          <TextField
-            label="Password"
-            variant="standard"
-            margin="normal"
-            type="password"
-          />
-          <Button type="submit" variant="contained">
-            Log in
-          </Button>
+          <Stack spacing={2} direction="column">
+            <TextField label="Email" variant="standard" margin="normal" />
+            <TextField
+              label="Password"
+              variant="standard"
+              margin="normal"
+              type="password"
+            />
+            <DialogActions>
+              <Button type="submit" variant="contained">
+                Log in
+              </Button>
+              <Button onClick={handleClose} variant="outlined">
+                Cancel
+              </Button>
+            </DialogActions>
+          </Stack>
         </form>
       </DialogContent>
     </Dialog>
