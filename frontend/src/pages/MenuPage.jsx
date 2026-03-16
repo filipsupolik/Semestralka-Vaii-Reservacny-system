@@ -1,7 +1,26 @@
-import React from "react";
-import MenuItemCard from "../components/MenuItemCard";
+import React, { useState } from "react";
+import { ShoppingCard, MenuItemCard } from "../components/index";
 
 const MenuPage = () => {
+  const [cart, setCart] = useState([]);
+
+  const handleAddToCart = (item) => {
+    setCart((prevCart) => {
+      const existingItem = prevCart.find(
+        (cartItem) => cartItem.name === item.name,
+      );
+      if (existingItem) {
+        return prevCart.map((cartItem) =>
+          cartItem.name === item.name
+            ? { ...cartItem, quantity: item.quantity }
+            : cartItem,
+        );
+      } else {
+        return [...prevCart, item];
+      }
+    });
+  };
+
   // Mock data for menu items
   const menuItems = [
     {
@@ -31,30 +50,7 @@ const MenuPage = () => {
     <div className="bg-gray-100 min-h-screen">
       <div className="flex flex-row-reverse">
         {/* Shopping Cart Section */}
-        <aside className="w-1/4 bg-white shadow-md p-4 h-full">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
-            Shopping Cart
-          </h2>
-          <ul className="space-y-4">
-            <li className="flex justify-between items-center border-b pb-2">
-              <span>Item 1</span>
-              <span>$8.99</span>
-            </li>
-            <li className="flex justify-between items-center border-b pb-2">
-              <span>Item 2</span>
-              <span>$10.99</span>
-            </li>
-          </ul>
-          <div className="mt-4 border-t pt-4">
-            <div className="flex justify-between font-bold">
-              <span>Total</span>
-              <span>$19.98</span>
-            </div>
-            <button className="w-full bg-red-500 text-white py-2 mt-4 rounded-lg hover:bg-red-600">
-              Checkout
-            </button>
-          </div>
-        </aside>
+        <ShoppingCard cart={cart} />
 
         {/* Menu Section */}
         <section className="w-3/4 py-16">
@@ -70,6 +66,7 @@ const MenuPage = () => {
                   name={item.name}
                   description={item.description}
                   price={item.price}
+                  onAddToCart={handleAddToCart}
                 />
               ))}
             </div>
