@@ -1,7 +1,7 @@
 function ShoppingCard({ cart }) {
   return (
     <div>
-      <aside className="w-1/4 bg-white shadow-md p-4 h-full m-6">
+      <aside className="w-full bg-white shadow-md p-4 h-full m-6">
         <h2 className="text-2xl font-bold text-gray-800 mb-4">Shopping Cart</h2>
         <ul className="space-y-4">
           {cart.map((item) => (

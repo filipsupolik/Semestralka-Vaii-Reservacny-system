@@ -31,7 +31,7 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "/menu",
+        path: "/menu/:name",
         element: <MenuPage />,
         handle: {
           title: "Menu",

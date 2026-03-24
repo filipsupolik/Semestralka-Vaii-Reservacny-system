@@ -7,7 +7,7 @@ function RestaurantCard({ image, name, cuisine }) {
   return (
     <div
       className="bg-white shadow-md rounded-lg overflow-hidden cursor-pointer"
-      onClick={() => navigate("/menu")}
+      onClick={() => navigate(`/menu/${name}`)}
     >
       <img src={image} alt={name} className="w-full h-48 object-cover" />
       <div className="p-4">
