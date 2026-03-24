@@ -51,10 +51,7 @@ const MenuPage = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <div className="flex flex-row-reverse">
-        {/* Shopping Cart Section */}
-        <ShoppingCard cart={cart} />
-
+      <div className="flex flex-row gap-4">
         {/* Menu Section */}
         <section className="w-3/4 py-16">
           <div className="container mx-auto px-4">
@@ -75,6 +72,8 @@ const MenuPage = () => {
             </div>
           </div>
         </section>
+        {/* Shopping Cart Section */}
+        <ShoppingCard cart={cart} />
       </div>
     </div>
   );
