@@ -1,11 +1,12 @@
+import "./index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import "./index.css";
 import LayoutPage from "./pages/LayoutPage";
 import HomePage from "./pages/HomePage";
 import MenuPage from "./pages/MenuPage";
 import RestaurantPage from "./pages/RestaurantPage";
+import PaymentPage from "./pages/PaymentPage";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,15 @@ const router = createBrowserRouter([
         element: <MenuPage />,
         handle: {
           title: "Menu",
+          showBack: true,
+          showNavigation: false,
+        },
+      },
+      {
+        path: "/checkout",
+        element: <PaymentPage />,
+        handle: {
+          title: "Checkout",
           showBack: true,
           showNavigation: false,
         },
