@@ -1,4 +1,17 @@
+import { useNavigate } from "react-router-dom";
+
 function ShoppingCard({ cart }) {
+  const navigate = useNavigate();
+  const handleNavigate = () => {
+    const totalAmount = cart.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0,
+    );
+    if (totalAmount > 0) {
+      navigate("/checkout");
+    }
+  };
+
   return (
     <div className="w-1/4 bg-white shadow-md p-4 h-screen m-6">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Shopping Cart</h2>
@@ -25,7 +38,10 @@ function ShoppingCard({ cart }) {
             .toFixed(2)}
         </span>
       </div>
-      <button className="w-full bg-red-500 text-white py-2 mt-4 rounded-lg hover:bg-red-600">
+      <button
+        className="w-full bg-red-500 text-white py-2 mt-4 rounded-lg hover:bg-red-600"
+        onClick={handleNavigate}
+      >
         Checkout
       </button>
     </div>

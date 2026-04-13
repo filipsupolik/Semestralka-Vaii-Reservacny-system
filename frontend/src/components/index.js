@@ -9,4 +9,4 @@ export {default as MenuItemCard} from "./MenuItemCard";
 export {default as ShoppingCard} from "./ShoppingCard";
 export {default as MenuItemDialog} from "./MenuItemDialog";
 export {default as MenuPageNavigation} from "./MenuPageNabigation";
-export {default as PaymentCard} from "./PaymentSummaryCard";
+export {default as PaymentCard} from "./PaymentCard";
