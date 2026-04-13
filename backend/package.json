@@ -4,6 +4,7 @@
   "main": "server.js",
   "type": "module",
   "dependencies": {
+    "@prisma/client": "^7.7.0",
     "accepts": "^2.0.0",
     "body-parser": "^2.2.2",
     "bytes": "^3.1.2",
@@ -75,7 +76,6 @@
     "pathe": "^2.0.3",
     "perfect-debounce": "^1.0.0",
     "pkg-types": "^2.3.0",
-    "prisma": "^6.19.2",
     "proxy-addr": "^2.0.7",
     "pure-rand": "^6.1.0",
     "qs": "^6.15.0",
@@ -106,5 +106,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "prisma": "^7.7.0"
+  }
 }
