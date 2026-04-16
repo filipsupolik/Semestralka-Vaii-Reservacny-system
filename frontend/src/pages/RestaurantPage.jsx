@@ -20,19 +20,19 @@ const RestaurantPage = () => {
     {
       id: 1,
       name: "Italian Bistro",
-      cuisine: "Italian",
+      cuisine: ["Italian"],
       image: "https://via.placeholder.com/300",
     },
     {
       id: 2,
       name: "Sushi Place",
-      cuisine: "Japanese",
+      cuisine: ["Japanese"],
       image: "https://via.placeholder.com/300",
     },
     {
       id: 3,
       name: "Burger Joint",
-      cuisine: "American",
+      cuisine: ["American", "Chinese", "Italian"],
       image: "https://via.placeholder.com/300",
     },
   ];
@@ -88,6 +88,7 @@ const RestaurantPage = () => {
             {restaurants.map((restaurant) => (
               <RestaurantCard
                 key={restaurant.id}
+                id={restaurant.id}
                 image={restaurant.image}
                 name={restaurant.name}
                 cuisine={restaurant.cuisine}

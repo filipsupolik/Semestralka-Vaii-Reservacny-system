@@ -1,27 +1,35 @@
-import React, { useState } from "react";
 import {
   ShoppingCard,
   MenuItemCard,
   MenuPageNavigation,
 } from "../components/index";
-import { useParams } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 
 function MenuPage() {
-  const [cart, setCart] = useState([]);
+  const { id } = useParams();
+  const { cartsByRestaurant, setCartsByRestaurant } = useOutletContext();
+  const cart = cartsByRestaurant[id] || [];
 
   const handleAddToCart = (item) => {
-    setCart((prevCart) => {
-      const existingItem = prevCart.find(
+    setCartsByRestaurant((prevCarts) => {
+      const existingCart = prevCarts[id] || [];
+      const existingItem = existingCart.find(
         (cartItem) => cartItem.name === item.name,
       );
       if (existingItem) {
-        return prevCart.map((cartItem) =>
-          cartItem.name === item.name
-            ? { ...cartItem, quantity: item.quantity }
-            : cartItem,
-        );
+        return {
+          ...prevCarts,
+          [id]: prevCarts[id].map((cartItem) =>
+            cartItem.name === item.name
+              ? { ...cartItem, quantity: item.quantity }
+              : cartItem,
+          ),
+        };
       } else {
-        return [...prevCart, item];
+        return {
+          ...prevCarts,
+          [id]: [...existingCart, item],
+        };
       }
     });
   };

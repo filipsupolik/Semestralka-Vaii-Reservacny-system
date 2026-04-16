@@ -9,6 +9,8 @@ function LayoutPage() {
   const currentRoute = matches.at(-1);
   const meta = currentRoute?.handle ?? {};
 
+  const [cartsByRestaurant, setCartsByRestaurant] = useState({});
+
   const openDialog = (type) => {
     setDialogType(type);
     setIsOpen(true);
@@ -18,7 +20,7 @@ function LayoutPage() {
     <div className="flex flex-col min-h-screen bg-gray-100">
       <TopBar {...meta} onOpenDialog={openDialog} />
       <div className="flex-grow">
-        <Outlet />
+        <Outlet context={{ cartsByRestaurant, setCartsByRestaurant }} />
         {dialogType === "login" && (
           <LoginDialog isOpen={isOpen} handleClose={closeDialog} />
         )}

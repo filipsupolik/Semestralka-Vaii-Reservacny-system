@@ -32,7 +32,7 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "/menu/:name",
+        path: "/menu/:id",
         element: <MenuPage />,
         handle: {
           title: "Menu",

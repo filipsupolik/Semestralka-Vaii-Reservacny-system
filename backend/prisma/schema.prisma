@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
   output   = "./generated"
 }
 
@@ -14,9 +14,98 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  password String
-  name     String?
-  role     String  @default("USER")
+  userId      Int
+  firstName   String
+  lastName    String
+  email       String
+  password    String
+  phoneNumber String
+  role        Role
+  restaurants Restaurant[]
+  orders      Order[]
+}
+
+model Restaurant {
+  restaurantId   Int
+  name           String
+  address        String
+  description    String
+  ownerId        Int
+  owner          User                 @relation(fields: [ownerId], references: [userId])
+  menuItems      MenuItem[]
+  categories     RestaurantCategory[]
+  orders         Order[]
+  menuCategories MenuCategory[]
+}
+
+model MenuItem {
+  menuItemId          Int
+  name                String
+  description         String
+  price               Float
+  categoryId          Int
+  restaurantId        Int
+  menuItemIngredient  Int
+  restaurant          Restaurant         @relation(fields: [restaurantId], references: [restaurantId])
+  category            MenuCategory       @relation(fields: [categoryId], references: [categoryId])
+  orderItem           OrderItem?
+  menuItemIngredients MenuItemIngredient @relation(fields: [menuItemIngredient], references: [id])
+}
+
+model MenuCategory {
+  categoryId   Int
+  name         String
+  restaurantId Int
+  menuItemId   Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [restaurantId])
+  menuItem     MenuItem   @relation(fields: [menuItemId], references: [menuItemId])
+}
+
+model RestaurantCategory {
+  categoryId   Int
+  name         String
+  restaurantId Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [restaurantId])
+}
+
+model Order {
+  orderId      Int
+  customerId   Int
+  restaurantId Int
+  totalPrice   Float
+  status       String
+  createdAt    DateTime
+  customer     User        @relation(fields: [customerId], references: [userId])
+  restaurant   Restaurant  @relation(fields: [restaurantId], references: [restaurantId])
+  orderItems   OrderItem[]
+}
+
+model OrderItem {
+  orderItemId         Int
+  orderId             Int
+  menuItemId          Int      @unique
+  quantity            Int
+  price_at_order_time Float
+  order               Order    @relation(fields: [orderId], references: [orderId])
+  menuItem            MenuItem @relation(fields: [menuItemId], references: [menuItemId])
+}
+
+model Ingredient {
+  id                   Int
+  name                 String
+  menuItemIngredientId Int
+  menuItemIngredients  MenuItemIngredient @relation(fields: [menuItemIngredientId], references: [id])
+}
+
+model MenuItemIngredient {
+  id           Int
+  menuItemId   Int
+  ingredientId Int
+  menuItem     MenuItem   @relation(fields: [menuItemId], references: [menuItemId])
+  ingredient   Ingredient @relation(fields: [ingredientId], references: [id])
+}
+
+enum Role {
+  CUSTOMER
+  RESTAURANT_OWNER
 }
