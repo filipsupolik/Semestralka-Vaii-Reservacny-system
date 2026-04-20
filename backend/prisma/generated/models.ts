@@ -8,4 +8,12 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/User.ts'
+export type * from './models/Restaurant.ts'
+export type * from './models/MenuItem.ts'
+export type * from './models/MenuCategory.ts'
+export type * from './models/RestaurantCategory.ts'
+export type * from './models/Order.ts'
+export type * from './models/OrderItem.ts'
+export type * from './models/Ingredient.ts'
 export type * from './commonInputTypes.ts'
