@@ -30,6 +30,7 @@ model Restaurant {
   name           String
   address        String
   description    String
+  createdAt      DateTime             @default(now()) @db.Timestamp(0)
   ownerId        Int
   owner          User                 @relation(fields: [ownerId], references: [userId])
   menuItems      MenuItem[]
