@@ -35,17 +35,17 @@ const HomePage = () => {
             <RestaurantCard
               image="https://via.placeholder.com/300"
               name="Restaurant Name"
-              cuisine="Cuisine Type"
+              cuisine={["Vietnamese, Fast food, Kebab"]}
             />
             <RestaurantCard
               image="https://via.placeholder.com/300"
               name="Restaurant Name"
-              cuisine="Cuisine Type"
+              cuisine={["Vietnamese, Fast food, Kebab"]}
             />
             <RestaurantCard
               image="https://via.placeholder.com/300"
               name="Restaurant Name"
-              cuisine="Cuisine Type"
+              cuisine={["Vietnamese, Fast food, Kebab"]}
             />
           </div>
         </div>

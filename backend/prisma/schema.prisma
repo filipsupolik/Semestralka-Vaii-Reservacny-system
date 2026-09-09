@@ -17,7 +17,7 @@ model User {
   userId      Int          @id @default(autoincrement())
   firstName   String
   lastName    String
-  email       String
+  email       String       @unique
   password    String
   phoneNumber String
   role        Role
@@ -43,12 +43,12 @@ model MenuItem {
   menuItemId   Int          @id @default(autoincrement())
   name         String
   description  String
-  price        Float
+  price        Decimal
   categoryId   Int
   restaurantId Int
   restaurant   Restaurant   @relation(fields: [restaurantId], references: [restaurantId])
   category     MenuCategory @relation(fields: [categoryId], references: [categoryId])
-  orderItem    OrderItem?
+  orderItem    OrderItem[]
   ingredients  Ingredient[]
 }
 
@@ -56,25 +56,28 @@ model MenuCategory {
   categoryId   Int        @id @default(autoincrement())
   name         String
   restaurantId Int
-  menuItemId   Int
   restaurant   Restaurant @relation(fields: [restaurantId], references: [restaurantId])
   menuItems    MenuItem[]
 }
 
 model RestaurantCategory {
-  categoryId   Int        @id @default(autoincrement())
-  name         String
-  restaurantId Int
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [restaurantId])
+  name               String
+  restaurantId       Int
+  categoryId         Int
+  restaurant         Restaurant @relation(fields: [restaurantId], references: [restaurantId])
+  category           Category?  @relation(fields: [categoryCategoryId], references: [categoryId])
+  categoryCategoryId Int?
+
+  @@id([restaurantId, categoryId])
 }
 
 model Order {
   orderId      Int         @id @default(autoincrement())
   customerId   Int
   restaurantId Int
-  totalPrice   Float
+  totalPrice   Decimal
   status       String
-  createdAt    DateTime
+  createdAt    DateTime    @default(now())
   customer     User        @relation(fields: [customerId], references: [userId])
   restaurant   Restaurant  @relation(fields: [restaurantId], references: [restaurantId])
   orderItems   OrderItem[]
@@ -83,9 +86,9 @@ model Order {
 model OrderItem {
   orderItemId         Int      @id @default(autoincrement())
   orderId             Int
-  menuItemId          Int      @unique
+  menuItemId          Int
   quantity            Int
-  price_at_order_time Float
+  price_at_order_time Decimal
   order               Order    @relation(fields: [orderId], references: [orderId])
   menuItem            MenuItem @relation(fields: [menuItemId], references: [menuItemId])
 }
@@ -94,6 +97,12 @@ model Ingredient {
   id        Int        @id @default(autoincrement())
   name      String
   menuItems MenuItem[]
+}
+
+model Category {
+  categoryId  Int                  @id @default(autoincrement())
+  name        String
+  restaurants RestaurantCategory[]
 }
 
 enum Role {

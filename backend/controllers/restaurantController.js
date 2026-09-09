@@ -7,4 +7,26 @@ async function getTop3(req, res) {
   res.status(200).json(restaurants);
 }
 
-module.exports = { getTop3 };
+// search or filter restaurants according to query
+async function searchRestaurants(req, res) {
+  const { name, category } = req.query;
+  const filters = {};
+  if (name) {
+    filters.name = {
+      contains: name,
+      mode: "insensitive",
+    };
+  }
+
+  if (category) {
+    filters.category = {
+      some: {
+        name: category,
+      },
+    };
+  }
+  const result = await restaurantService.searchRestaurants(filters);
+  res.status(200).json(result);
+}
+
+module.exports = { getTop3, searchRestaurants };

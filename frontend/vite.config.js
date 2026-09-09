@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import tailwindcss from 'tailwindcss'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "tailwindcss";
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -8,6 +8,6 @@ export default defineConfig({
   server: {
     host: true,
     strictPort: true,
-    port: 5173
-  }
-})
+    port: 5173,
+  },
+});

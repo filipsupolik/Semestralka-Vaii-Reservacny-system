@@ -10,4 +10,10 @@ async function getAllRestaurants() {
   });
 }
 
-module.exports = { getAllRestaurants };
+async function searchRestaurants(filters) {
+  return prisma.restaurant.findMany({
+    where: filters,
+  });
+}
+
+module.exports = { getAllRestaurants, searchRestaurants };
