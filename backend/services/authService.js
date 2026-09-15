@@ -26,7 +26,11 @@ function login(user) {
   const token = jwt.sign({ id: user.userId }, process.env.JWT_SECRET, {
     expiresIn: "24h",
   });
-  return token;
+  return {
+    token,
+    email: user.email,
+    role: user.role,
+  };
 }
 
 async function registerUser(req) {

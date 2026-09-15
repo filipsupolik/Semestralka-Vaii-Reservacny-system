@@ -7,6 +7,8 @@ import HomePage from "./pages/HomePage";
 import MenuPage from "./pages/MenuPage";
 import RestaurantPage from "./pages/RestaurantPage";
 import PaymentPage from "./pages/PaymentPage";
+import ProfilePage from "./pages/ProfilePage";
+import OwnerDashboardPage from "./pages/OwnerDashboardPage";
 
 const router = createBrowserRouter([
   {
@@ -45,6 +47,24 @@ const router = createBrowserRouter([
         element: <PaymentPage />,
         handle: {
           title: "Checkout",
+          showBack: true,
+          showNavigation: false,
+        },
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />,
+        handle: {
+          title: "Profile",
+          showBack: true,
+          showNavigation: false,
+        },
+      },
+      {
+        path: "/owner-dashboard",
+        element: <OwnerDashboardPage />,
+        handle: {
+          title: "Owner Dashboard",
           showBack: true,
           showNavigation: false,
         },
