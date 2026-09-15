@@ -4,7 +4,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const restaurantRouter = require("./routes/restaurantRouter");
-const authRouter = require("../backend/routes/authRouter");
+const authRouter = require("./routes/authRouter");
 
 dotenv.config();
 

@@ -8,3 +8,5 @@ const restaurantRouter = Router();
 
 restaurantRouter.get("/", getTop3);
 restaurantRouter.get("/", searchRestaurants);
+
+module.exports = restaurantRouter;
