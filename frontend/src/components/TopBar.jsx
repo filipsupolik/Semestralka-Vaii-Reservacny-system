@@ -10,6 +10,7 @@ function TopBar({
   onOpenDialog,
   isLoggedIn,
   userRole,
+  actionButtons,
   onLogout,
 }) {
   const navigate = useNavigate();
@@ -59,63 +60,66 @@ function TopBar({
               </ul>
             </nav>
           )}
-          {!isLoggedIn ? (
-            <button
-              className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 flex items-center"
-              onClick={() => onOpenDialog("login")}
-            >
-              <FaUser className="mr-2" />
-              Login
-            </button>
-          ) : (
-            <div className="relative">
+          <div className="flex items-center gap-4">
+            {actionButtons}
+            {!isLoggedIn ? (
               <button
-                className="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 flex items-center"
-                onClick={() => setIsMenuOpen((open) => !open)}
-                aria-expanded={isMenuOpen}
-                aria-haspopup="menu"
+                className="flex items-center rounded-full bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+                onClick={() => onOpenDialog("login")}
               >
                 <FaUser className="mr-2" />
-                Profile
+                Login
               </button>
-              {isMenuOpen && (
-                <div
-                  className="absolute right-0 z-10 mt-2 w-48 rounded-md bg-white py-1 shadow-lg"
-                  role="menu"
+            ) : (
+              <div className="relative">
+                <button
+                  className="flex items-center rounded-full bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+                  onClick={() => setIsMenuOpen((open) => !open)}
+                  aria-expanded={isMenuOpen}
+                  aria-haspopup="menu"
                 >
-                  <button
-                    className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      navigate("/profile");
-                    }}
-                    role="menuitem"
+                  <FaUser className="mr-2" />
+                  Profile
+                </button>
+                {isMenuOpen && (
+                  <div
+                    className="absolute right-0 z-10 mt-2 w-48 rounded-md bg-white py-1 shadow-lg"
+                    role="menu"
                   >
-                    My profile
-                  </button>
-                  {userRole === "RESTAURANT_OWNER" && (
                     <button
                       className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
                       onClick={() => {
                         setIsMenuOpen(false);
-                        navigate("/owner-dashboard");
+                        navigate("/profile");
                       }}
                       role="menuitem"
                     >
-                      Owner dashboard
+                      My profile
                     </button>
-                  )}
-                  <button
-                    className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
-                    onClick={handleLogout}
-                    role="menuitem"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+                    {userRole === "RESTAURANT_OWNER" && (
+                      <button
+                        className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                        onClick={() => {
+                          setIsMenuOpen(false);
+                          navigate("/owner-dashboard");
+                        }}
+                        role="menuitem"
+                      >
+                        Owner dashboard
+                      </button>
+                    )}
+                    <button
+                      className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                      onClick={handleLogout}
+                      role="menuitem"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </header>
     </div>
@@ -129,6 +133,7 @@ TopBar.propTypes = {
   onOpenDialog: PropTypes.func.isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
   userRole: PropTypes.string,
+  actionButtons: PropTypes.node,
   onLogout: PropTypes.func.isRequired,
 };
 
