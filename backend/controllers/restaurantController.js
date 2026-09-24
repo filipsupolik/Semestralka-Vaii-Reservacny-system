@@ -28,5 +28,30 @@ async function searchRestaurants(req, res) {
   const result = await restaurantService.searchRestaurants(filters);
   res.status(200).json(result);
 }
+async function createRestaurant(req, res) {
+  const { name, address, description, categories } = req.body;
 
-module.exports = { getTop3, searchRestaurants };
+  if (
+    !name ||
+    !address ||
+    !description ||
+    !Array.isArray(categories) ||
+    categories.some((category) => !category)
+  ) {
+    return res.status(400).json({
+      message: "Name, address, description, and categories are required",
+    });
+  }
+
+  const restaurant = await restaurantService.createRestaurant({
+    ownerId: req.userId,
+    name,
+    address,
+    description,
+    categories,
+  });
+
+  return res.status(201).json(restaurant);
+}
+
+module.exports = { getTop3, searchRestaurants, createRestaurant };
