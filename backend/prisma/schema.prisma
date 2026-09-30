@@ -61,7 +61,6 @@ model MenuCategory {
 }
 
 model RestaurantCategory {
-  name               String
   restaurantId       Int
   categoryId         Int
   restaurant         Restaurant @relation(fields: [restaurantId], references: [restaurantId])

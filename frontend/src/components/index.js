@@ -2,7 +2,7 @@ export { default as TopBar } from "./TopBar";
 export { default as Footer } from "./Footer";
 export { default as LoginDialog } from "./LoginDialog";
 export { default as RestaurantCard } from "./RestaurantCard";
-export { default as SearchBar } from "./SearchBar";
+export { default as SearchBar } from "./SearchBar.jsx";
 export { default as CategoryCard } from "./CategoryCard";
 export { default as ShowAllCategoriesDialog } from "./ShowAllCategoriesDialog";
 export { default as MenuItemCard } from "./MenuItemCard";

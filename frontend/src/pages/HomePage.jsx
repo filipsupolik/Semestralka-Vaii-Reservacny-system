@@ -1,9 +1,18 @@
 import React from "react";
 import RestaurantCard from "../components/RestaurantCard";
 import { useNavigate } from "react-router-dom";
+import { useRestaurants } from "../hooks";
 
 const HomePage = () => {
   const navigate = useNavigate();
+  const { restaurants, isLoading } = useRestaurants(true);
+
+  const getRestaurantCuisine = (restaurant) => {
+    if (restaurant.categories && restaurant.categories.length > 0) {
+      return restaurant.categories.map((c) => c.category?.name).filter(Boolean);
+    }
+    return restaurant.cuisine || [];
+  };
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -31,23 +40,23 @@ const HomePage = () => {
           <h3 className="text-2xl font-bold text-gray-800 mb-6">
             Featured Restaurants
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <RestaurantCard
-              image="https://via.placeholder.com/300"
-              name="Restaurant Name"
-              cuisine={["Vietnamese, Fast food, Kebab"]}
-            />
-            <RestaurantCard
-              image="https://via.placeholder.com/300"
-              name="Restaurant Name"
-              cuisine={["Vietnamese, Fast food, Kebab"]}
-            />
-            <RestaurantCard
-              image="https://via.placeholder.com/300"
-              name="Restaurant Name"
-              cuisine={["Vietnamese, Fast food, Kebab"]}
-            />
-          </div>
+          {isLoading ? (
+            <div className="text-center text-gray-600">
+              Loading restaurants...
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {restaurants.slice(0, 3).map((restaurant) => (
+                <RestaurantCard
+                  key={restaurant.restaurantId || restaurant.id}
+                  id={restaurant.restaurantId || restaurant.id}
+                  image={restaurant.image || "https://via.placeholder.com/300"}
+                  name={restaurant.name}
+                  cuisine={getRestaurantCuisine(restaurant)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>

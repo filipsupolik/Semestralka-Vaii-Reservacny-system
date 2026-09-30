@@ -1,0 +1,9 @@
+Projekt je fullstack aplikácia na objednávanie jedla.
+Frontend: React, Tailwind CSS.
+Backend: Node.js, Express.js.
+Databáza: PostgreSQL spravovaná cez Prisma ORM.
+
+Pravidlá pre kód:
+- Pri písaní backend kódu vždy ber ohľad na existujúcu schému v prisma/schema.prisma.
+- Express routy musia vracať presné JSON dátové štruktúry, aké očakáva frontend.
+- Používaj moderný a bezpečný JavaScript

@@ -1,6 +1,6 @@
-function CategoryCard({ title, image }) {
+function CategoryCard({ title, image, onClick }) {
   return (
-    <div>
+    <div onClick={onClick} className="cursor-pointer">
       <div className="bg-amber-500 p-3 rounded-lg">
         <img src={image} alt={title} />
       </div>

@@ -23,13 +23,9 @@ async function checkPassword(req, user) {
 }
 
 function login(user) {
-  const token = jwt.sign(
-    { userId: user.userId, role: user.role },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "24h",
-    },
-  );
+  const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, {
+    expiresIn: "24h",
+  });
   return {
     token,
     email: user.email,
@@ -53,13 +49,9 @@ async function registerUser(req) {
     },
   });
 
-  const token = jwt.sign(
-    { id: user.userId, role: user.role },
-    process.env.JWT_SECRET,
-    {
-      expiresIn: "24h",
-    },
-  );
+  const token = jwt.sign({ id: user.userId }, process.env.JWT_SECRET, {
+    expiresIn: "24h",
+  });
 
   return { token };
 }

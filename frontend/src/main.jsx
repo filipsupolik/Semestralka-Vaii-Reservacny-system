@@ -2,6 +2,7 @@ import "./index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { AuthProvider, CartProvider, DashboardProvider } from "./context";
 import LayoutPage from "./pages/LayoutPage";
 import HomePage from "./pages/HomePage";
 import MenuPage from "./pages/MenuPage";
@@ -75,6 +76,12 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <CartProvider>
+        <DashboardProvider>
+          <RouterProvider router={router} />
+        </DashboardProvider>
+      </CartProvider>
+    </AuthProvider>
   </StrictMode>,
 );

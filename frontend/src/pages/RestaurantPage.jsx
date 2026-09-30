@@ -1,50 +1,20 @@
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  Checkbox,
-} from "@mui/material";
 import { RestaurantCard, SearchBar } from "../components/index";
 import CategoryCard from "../components/CategoryCard";
 import ShowAllCategoriesDialog from "../components/ShowAllCategoriesDialog";
+import { useRestaurants, useRestaurantSearch } from "../hooks";
+import { mockCategories } from "../data/mockData";
 
 const RestaurantPage = () => {
-  // Mock data for restaurants
-  const restaurants = [
-    {
-      id: 1,
-      name: "Italian Bistro",
-      cuisine: ["Italian"],
-      image: "https://via.placeholder.com/300",
-    },
-    {
-      id: 2,
-      name: "Sushi Place",
-      cuisine: ["Japanese"],
-      image: "https://via.placeholder.com/300",
-    },
-    {
-      id: 3,
-      name: "Burger Joint",
-      cuisine: ["American", "Chinese", "Italian"],
-      image: "https://via.placeholder.com/300",
-    },
-  ];
-
-  const categories = [
-    { id: 1, name: "Italian", image: "https://via.placeholder.com/150" },
-    { id: 2, name: "Japanese", image: "https://via.placeholder.com/150" },
-    { id: 3, name: "American", image: "https://via.placeholder.com/150" },
-  ];
-
+  const { restaurants, isLoading } = useRestaurants(true);
+  const {
+    search,
+    results: searchResults,
+    isLoading: isSearching,
+  } = useRestaurantSearch();
+  const categories = mockCategories;
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   const handleOpenShowAllDialog = () => {
     setDialogOpen(true);
@@ -54,27 +24,36 @@ const RestaurantPage = () => {
     setDialogOpen(false);
   };
 
-  /*const handleCategoryToggle = (categoryId) => {
-    setSelectedCategories((prevSelected) => {
-      if (prevSelected.includes(categoryId)) {
-        return prevSelected.filter((id) => id !== categoryId);
-      } else {
-        return [...prevSelected, categoryId];
-      }
-    });
-  };*/
+  const handleSearch = async (query) => {
+    await search({ name: query });
+  };
+
+  const handleCategoryFilter = (categoryName) => {
+    setSelectedCategory(categoryName);
+    search({ category: categoryName });
+  };
+
+  const displayRestaurants = selectedCategory ? searchResults : restaurants;
+
+  const getRestaurantCuisine = (restaurant) => {
+    if (restaurant.categories && restaurant.categories.length > 0) {
+      return restaurant.categories.map((c) => c.category?.name).filter(Boolean);
+    }
+    return restaurant.cuisine || [];
+  };
 
   return (
     <div>
       <section className="py-16">
         <div className="container mx-auto px-4 py-4">
-          <SearchBar title={"Vyhladaj restauraciu"} />
+          <SearchBar title={"Vyhladaj restauraciu"} onSearch={handleSearch} />
           <div className="flex flex-row gap-4">
             {categories.map((category) => (
               <CategoryCard
                 key={category.id}
                 image={category.image}
                 title={category.name}
+                onClick={() => handleCategoryFilter(category.name)}
               />
             ))}
             <button
@@ -84,17 +63,23 @@ const RestaurantPage = () => {
               Show All
             </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5">
-            {restaurants.map((restaurant) => (
-              <RestaurantCard
-                key={restaurant.id}
-                id={restaurant.id}
-                image={restaurant.image}
-                name={restaurant.name}
-                cuisine={restaurant.cuisine}
-              />
-            ))}
-          </div>
+          {isLoading || isSearching ? (
+            <div className="text-center text-gray-600 mt-5">
+              Loading restaurants...
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5">
+              {displayRestaurants.map((restaurant) => (
+                <RestaurantCard
+                  key={restaurant.restaurantId || restaurant.id}
+                  id={restaurant.restaurantId || restaurant.id}
+                  image={restaurant.image || "https://via.placeholder.com/300"}
+                  name={restaurant.name}
+                  cuisine={getRestaurantCuisine(restaurant)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
