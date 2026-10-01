@@ -1,5 +1,4 @@
 const { prisma } = require("../lib/prisma");
-const { connect } = require("../routes/restaurantRouter");
 
 // Return top 3 restaurants by newest id until a createdAt field exists.
 async function getAllRestaurants() {
@@ -25,6 +24,7 @@ async function createRestaurant({
   address,
   description,
   categories,
+  imageUrl,
 }) {
   return prisma.restaurant.create({
     data: {
@@ -32,6 +32,7 @@ async function createRestaurant({
       name,
       address,
       description,
+      imageUrl,
       categories: {
         create: categories.map(({ categoryId }) => ({
           category: {

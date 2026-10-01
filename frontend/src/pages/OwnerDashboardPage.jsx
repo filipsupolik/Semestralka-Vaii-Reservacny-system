@@ -1,12 +1,20 @@
+import { useState } from "react";
 import { useDashboard } from "../context";
 import {
   mockProjects,
   mockAnnouncements,
   mockTrendingUsers,
 } from "../data/mockData";
+import CreateRestaurantDialog from "../components/CreateRestaurantDialog";
+import { restaurantService } from "../services";
 
 function OwnerDashboardPage() {
   const { selectedProject, toggleProject } = useDashboard();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleCreateRestaurant = async (restaurantData) => {
+    await restaurantService.createRestaurant(restaurantData);
+  };
 
   return (
     <main className="h-screen w-full overflow-hidden">
@@ -14,7 +22,15 @@ function OwnerDashboardPage() {
         <div className="flex flex-col h-full w-full min-w-0">
           <div className="col-start-2 row-start-2 grid min-h-0 min-w-0 grid-cols-[minmax(0,70%)_minmax(0,1fr)] grid-rows-2 gap-[25px] overflow-hidden bg-[#e6e6e6] p-[25px]">
             <div className="row-span-2 min-w-0">
-              <h3>Your projects</h3>
+              <div className="flex justify-between items-center mb-4">
+                <h3>Your restaurants</h3>
+                <button
+                  onClick={() => setIsDialogOpen(true)}
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                >
+                  + Create Restaurant
+                </button>
+              </div>
               <div className="grid grid-cols-2 auto-rows-fr gap-[15px]">
                 {mockProjects.map((project) => (
                   <div
@@ -72,6 +88,11 @@ function OwnerDashboardPage() {
           </div>
         </div>
       </section>
+      <CreateRestaurantDialog
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onCreateRestaurant={handleCreateRestaurant}
+      />
     </main>
   );
 }

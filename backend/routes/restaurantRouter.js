@@ -8,6 +8,7 @@ const {
   authMiddleware,
   requireRoleMiddleware,
 } = require("../middleware/authMiddleware");
+const { upload, processImage } = require("../middleware/uploadMiddleware");
 
 const restaurantRouter = Router();
 
@@ -17,6 +18,8 @@ restaurantRouter.post(
   "/",
   authMiddleware,
   requireRoleMiddleware("RESTAURANT_OWNER"),
+  upload.single("image"),
+  processImage,
   createRestaurant,
 );
 

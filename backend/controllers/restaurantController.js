@@ -43,12 +43,17 @@ async function createRestaurant(req, res) {
     });
   }
 
+  const imageUrl = req.file
+    ? `/uploads/restaurants/${req.file.filename}`
+    : null;
+
   const restaurant = await restaurantService.createRestaurant({
     ownerId: req.userId,
     name,
     address,
     description,
     categories,
+    imageUrl,
   });
 
   return res.status(201).json(restaurant);

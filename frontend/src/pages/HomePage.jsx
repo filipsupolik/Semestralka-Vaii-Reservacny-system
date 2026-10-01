@@ -14,6 +14,13 @@ const HomePage = () => {
     return restaurant.cuisine || [];
   };
 
+  const getRestaurantImage = (restaurant) => {
+    if (restaurant.imageUrl) {
+      return restaurant.imageUrl;
+    }
+    return restaurant.image || "https://via.placeholder.com/300";
+  };
+
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Hero Section */}
@@ -50,7 +57,7 @@ const HomePage = () => {
                 <RestaurantCard
                   key={restaurant.restaurantId || restaurant.id}
                   id={restaurant.restaurantId || restaurant.id}
-                  image={restaurant.image || "https://via.placeholder.com/300"}
+                  image={getRestaurantImage(restaurant)}
                   name={restaurant.name}
                   cuisine={getRestaurantCuisine(restaurant)}
                 />
