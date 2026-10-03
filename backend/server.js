@@ -4,9 +4,9 @@ const morgan = require("morgan");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
-const restaurantRouter = require("./routes/restaurantRouter");
-const authRouter = require("./routes/authRouter");
-const categoryRouter = require("./routes/categoryRouter");
+const restaurantRouter = require("./src/routes/restaurantRouter");
+const authRouter = require("./src/routes/authRouter");
+const categoryRouter = require("./src/routes/categoryRouter");
 
 dotenv.config();
 

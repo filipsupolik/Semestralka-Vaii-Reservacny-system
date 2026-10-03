@@ -1,4 +1,4 @@
-const { prisma } = require("../lib/prisma");
+const { prisma } = require("../../lib/prisma");
 
 // Return top 3 restaurants by newest id until a createdAt field exists.
 async function getAllRestaurants() {

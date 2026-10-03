@@ -17,7 +17,7 @@ restaurantRouter.get("/", searchRestaurants);
 restaurantRouter.post(
   "/",
   authMiddleware,
-  requireRoleMiddleware("RESTAURANT_OWNER"),
+  requireRoleMiddleware,
   upload.single("image"),
   processImage,
   createRestaurant,

@@ -29,7 +29,15 @@ async function searchRestaurants(req, res) {
   res.status(200).json(result);
 }
 async function createRestaurant(req, res) {
-  const { name, address, description, categories } = req.body;
+  let { name, address, description, categories } = req.body;
+
+  try {
+    categories = JSON.parse(categories);
+  } catch {
+    return res.status(400).json({
+      message: "Invalid categories format",
+    });
+  }
 
   if (
     !name ||

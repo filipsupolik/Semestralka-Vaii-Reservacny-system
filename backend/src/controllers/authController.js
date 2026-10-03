@@ -1,27 +1,34 @@
-const authService = require('../services/authService');
+const authService = require("../services/authService");
 
-const register = async (req, res) => {
-    try {
-        const user = authService.registerUser(req.body);
-        res.status(201).json(user); 
-    } catch (error) {
-        res.status(404).json({error: error.message});
+async function login(req, res) {
+  try {
+    const user = await authService.findUser(req);
+
+    if (!user) {
+      res.status(404).send({ message: "User not found" });
     }
-};
 
-const login = async (req, res) => {
-    try {
-        const {email, password} = req.body;
-        const loggedUser = authService.loginUser(email, password);
-
-        if(loggedUser.token) {
-            res.json(result);
-        } else {
-            res.status(401).json({message: 'Invalid credentials'});
-        }
-    } catch (error) {
-        res.status(500).json({error: error.message});
+    const password = await authService.checkPassword(req, user);
+    if (!password) {
+      res.status(401).send({ message: "Invalid password" });
     }
-};
 
-module.exports = {register, login}
+    const loggedUser = authService.login(user);
+    res.json({ loggedUser, message: "Login successful" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(503);
+  }
+}
+
+async function register(req, res) {
+  try {
+    await authService.registerUser(req);
+    res.status(201).json({ message: "Registration successful" });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Registration failed" });
+  }
+}
+
+module.exports = { login, register };

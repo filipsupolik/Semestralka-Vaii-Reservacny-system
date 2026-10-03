@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 function authMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization;
+  const authHeader = req.headers["authorization"];
 
   if (!authHeader) {
     return res.status(401).json({
@@ -17,21 +17,19 @@ function authMiddleware(req, res, next) {
     }
 
     req.userId = decoded.userId;
-    req.role = decoded.role;
     next();
   });
 }
 
-function requireRoleMiddleware(role) {
-  return (req, res, next) => {
-    if (req.role !== role) {
-      return res.status(403).json({
-        message: "Forbidden",
-      });
-    }
+function requireRoleMiddleware(req, res, next) {
+  const authRole = req.headers["x-user-role"];
+  if (authRole !== "RESTAURANT_OWNER") {
+    return res.status(403).json({
+      message: "Forbidden",
+    });
+  }
 
-    next();
-  };
+  next();
 }
 
 module.exports = { authMiddleware, requireRoleMiddleware };

@@ -35,10 +35,6 @@ export const restaurantService = {
       formData.append("image", image);
     }
 
-    return apiService.post("/restaurant", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    return apiService.post("/restaurant", formData);
   },
 };
