@@ -1,13 +1,20 @@
 import { useState } from "react";
 import { Outlet, useLocation, useMatches } from "react-router-dom";
-import { LoginDialog, Footer, TopBar } from "../components/index";
+import {
+  LoginDialog,
+  Footer,
+  TopBar,
+  CreateRestaurantDialog,
+} from "../components/index";
 import { useAuth, useDashboard } from "../context";
+import { restaurantService } from "../services";
 
 function LayoutPage() {
   const matches = useMatches();
   const [isOpen, setIsOpen] = useState(false);
   const [dialogType, setDialogType] = useState(null);
-  const { user, isAuthenticated, userRole, login, logout } = useAuth();
+  const [isCreateRestaurantOpen, setIsCreateRestaurantOpen] = useState(false);
+  const { setUser, isAuthenticated, userRole, logout } = useAuth();
   const { selectedProject } = useDashboard();
   const currentRoute = matches.at(-1);
   const meta = currentRoute?.handle ?? {};
@@ -22,13 +29,30 @@ function LayoutPage() {
   };
   const closeDialog = () => setIsOpen(false);
 
-  const handleLogin = async (credentials) => {
+  const handleLogin = async (loginData) => {
     try {
-      await login(credentials.email, credentials.password);
+      // loginData contains { loggedUser: { token, user: { email, role } }, message }
+      const { loggedUser } = loginData;
+      if (loggedUser && loggedUser.token) {
+        // Store auth data in localStorage
+        localStorage.setItem("authToken", loggedUser.token);
+        localStorage.setItem("userRole", loggedUser.user.role);
+        localStorage.setItem("userEmail", loggedUser.user.email);
+
+        // Update auth state
+        setUser({
+          role: loggedUser.user.role,
+          email: loggedUser.user.email,
+        });
+      }
       closeDialog();
     } catch (error) {
       console.error("Login failed:", error);
     }
+  };
+
+  const handleCreateRestaurant = async (restaurantData) => {
+    await restaurantService.createRestaurant(restaurantData);
   };
 
   return (
@@ -44,6 +68,7 @@ function LayoutPage() {
               <button
                 className={actionButtonClass}
                 disabled={selectedProject !== null}
+                onClick={() => setIsCreateRestaurantOpen(true)}
               >
                 New
               </button>
@@ -73,6 +98,11 @@ function LayoutPage() {
             onLogin={handleLogin}
           />
         )}
+        <CreateRestaurantDialog
+          open={isCreateRestaurantOpen}
+          onClose={() => setIsCreateRestaurantOpen(false)}
+          onCreateRestaurant={handleCreateRestaurant}
+        />
       </div>
       <Footer />
     </div>

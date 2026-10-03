@@ -19,6 +19,7 @@ function TopBar({
   const handleLogout = () => {
     setIsMenuOpen(false);
     onLogout();
+    navigate("/");
   };
 
   return (

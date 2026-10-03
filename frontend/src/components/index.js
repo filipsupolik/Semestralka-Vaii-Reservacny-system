@@ -10,3 +10,4 @@ export { default as ShoppingCard } from "./ShoppingCard";
 export { default as MenuItemDialog } from "./MenuItemDialog";
 export { default as MenuPageNavigation } from "./MenuPageNabigation";
 export { default as PaymentCard } from "./PaymentCard";
+export { default as CreateRestaurantDialog } from "./CreateRestaurantDialog";

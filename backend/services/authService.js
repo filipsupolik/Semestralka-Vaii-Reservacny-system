@@ -28,8 +28,10 @@ function login(user) {
   });
   return {
     token,
-    email: user.email,
-    role: user.role,
+    user: {
+      email: user.email,
+      role: user.role,
+    },
   };
 }
 
@@ -38,7 +40,7 @@ async function registerUser(req) {
 
   const hashedPassword = await bcrypt.hash(password, 6);
 
-  const user = await prisma.user.create({
+  await prisma.user.create({
     data: {
       firstName,
       lastName,
@@ -48,12 +50,6 @@ async function registerUser(req) {
       role,
     },
   });
-
-  const token = jwt.sign({ id: user.userId }, process.env.JWT_SECRET, {
-    expiresIn: "24h",
-  });
-
-  return { token };
 }
 
 module.exports = { registerUser, findUser, checkPassword, login };

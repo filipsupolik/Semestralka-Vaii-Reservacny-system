@@ -14,7 +14,7 @@ async function login(req, res) {
     }
 
     const loggedUser = authService.login(user);
-    res.json(loggedUser);
+    res.json({ loggedUser, message: "Login successful" });
   } catch (error) {
     console.error(error.message);
     res.status(503);
@@ -23,8 +23,8 @@ async function login(req, res) {
 
 async function register(req, res) {
   try {
-    const user = await authService.registerUser(req);
-    res.status(201).json(user);
+    await authService.registerUser(req);
+    res.status(201).json({ message: "Registration successful" });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ error: "Registration failed" });
