@@ -5,9 +5,6 @@ const API_BASE_URL =
 
 const apiService = axios.create({
   baseURL: API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 // Add auth token and user role to requests

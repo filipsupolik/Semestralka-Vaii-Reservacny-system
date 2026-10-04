@@ -26,6 +26,7 @@ export const restaurantService = {
     const { name, address, description, categories, image } = restaurantData;
 
     const formData = new FormData();
+
     formData.append("name", name);
     formData.append("address", address);
     formData.append("description", description);
@@ -34,7 +35,6 @@ export const restaurantService = {
     if (image) {
       formData.append("image", image);
     }
-
     return apiService.post("/restaurant", formData);
   },
 };

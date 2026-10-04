@@ -2,7 +2,7 @@
 const restaurantService = require("../services/restaurantService");
 
 async function getTop3(req, res) {
-  const restaurants = await restaurantService.getAllRestaurants();
+  const restaurants = await restaurantService.getTop3Restaurants();
 
   res.status(200).json(restaurants);
 }

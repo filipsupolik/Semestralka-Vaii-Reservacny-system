@@ -62,11 +62,10 @@ model MenuCategory {
 }
 
 model RestaurantCategory {
-  restaurantId       Int
-  categoryId         Int
-  restaurant         Restaurant @relation(fields: [restaurantId], references: [restaurantId])
-  category           Category?  @relation(fields: [categoryCategoryId], references: [categoryId])
-  categoryCategoryId Int?
+  restaurantId Int
+  categoryId   Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [restaurantId])
+  category     Category?  @relation(fields: [categoryId], references: [categoryId])
 
   @@id([restaurantId, categoryId])
 }

@@ -1,7 +1,7 @@
 const { prisma } = require("../../lib/prisma");
 
 // Return top 3 restaurants by newest id until a createdAt field exists.
-async function getAllRestaurants() {
+async function getTop3Restaurants() {
   return prisma.restaurant.findMany({
     orderBy: {
       createdAt: "desc",
@@ -50,7 +50,7 @@ async function createRestaurant({
 }
 
 module.exports = {
-  getAllRestaurants,
+  getTop3Restaurants,
   searchRestaurants,
   createRestaurant,
 };
