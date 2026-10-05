@@ -16,7 +16,13 @@ import {
 } from "@mui/material";
 import { menuService } from "../services";
 
-const AddMenuItemDialog = ({ open, onClose, restaurantId, onMenuItemCreated }) => {
+const AddMenuItemDialog = ({
+  open,
+  onClose,
+  restaurantId,
+  menuItem = null,
+  onSaved,
+}) => {
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -27,6 +33,18 @@ const AddMenuItemDialog = ({ open, onClose, restaurantId, onMenuItemCreated }) =
   const [categories, setCategories] = useState([]);
   const [isLoadingCategories, setIsLoadingCategories] = useState(false);
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    if (open && menuItem) {
+      setFormData({
+        name: menuItem.name || "",
+        description: menuItem.description || "",
+        price: menuItem.price?.toString() || "",
+        categoryId: menuItem.categoryId || "",
+        newCategory: "",
+      });
+    }
+  }, [open, menuItem]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -79,15 +97,23 @@ const AddMenuItemDialog = ({ open, onClose, restaurantId, onMenuItemCreated }) =
         categoryId = newCat.categoryId;
       }
 
-      const menuItem = await menuService.createMenuItem(restaurantId, {
+      const payload = {
         name: formData.name,
         description: formData.description,
         price: parseFloat(formData.price),
         categoryId,
-      });
+      };
 
-      if (onMenuItemCreated) {
-        onMenuItemCreated(menuItem);
+      const savedItem = menuItem
+        ? await menuService.updateMenuItem(
+            restaurantId,
+            menuItem.menuItemId,
+            payload,
+          )
+        : await menuService.createMenuItem(restaurantId, payload);
+
+      if (onSaved) {
+        onSaved(savedItem);
       }
       handleClose();
     } catch (error) {
@@ -109,7 +135,9 @@ const AddMenuItemDialog = ({ open, onClose, restaurantId, onMenuItemCreated }) =
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Add Menu Item</DialogTitle>
+      <DialogTitle>
+        {menuItem ? "Update Menu Item" : "Add Menu Item"}
+      </DialogTitle>
       <DialogContent>
         <Box component="form" sx={{ mt: 2 }}>
           <TextField
@@ -198,7 +226,7 @@ const AddMenuItemDialog = ({ open, onClose, restaurantId, onMenuItemCreated }) =
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
         <Button onClick={handleSubmit} variant="contained" color="primary">
-          Add Item
+          {menuItem ? "Save Changes" : "Add Item"}
         </Button>
       </DialogActions>
     </Dialog>

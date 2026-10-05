@@ -10,6 +10,19 @@ async function getTop3Restaurants() {
   });
 }
 
+// Return restaurants owned by the given user
+async function getRestaurantsByOwner(ownerId) {
+  return prisma.restaurant.findMany({
+    where: { ownerId },
+    orderBy: {
+      createdAt: "desc",
+    },
+    include: {
+      categories: true,
+    },
+  });
+}
+
 // Filter all restaurants acoording to filter
 async function searchRestaurants(filters) {
   return prisma.restaurant.findMany({
@@ -51,6 +64,7 @@ async function createRestaurant({
 
 module.exports = {
   getTop3Restaurants,
+  getRestaurantsByOwner,
   searchRestaurants,
   createRestaurant,
 };

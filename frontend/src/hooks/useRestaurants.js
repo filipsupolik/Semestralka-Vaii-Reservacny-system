@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { restaurantService } from "../services";
 import { mockRestaurants } from "../data/mockData";
+import { useDashboard } from "../context";
 
 export const useRestaurants = (useMock = false) => {
   const [restaurants, setRestaurants] = useState([]);
@@ -30,6 +31,32 @@ export const useRestaurants = (useMock = false) => {
   }, [useMock]);
 
   return { restaurants, isLoading, error };
+};
+
+export const useMyRestaurants = () => {
+  const [restaurants, setRestaurants] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { restaurantsVersion } = useDashboard();
+
+  const fetchMyRestaurants = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const data = await restaurantService.getMyRestaurants();
+      setRestaurants(data);
+    } catch (err) {
+      setError(err.message);
+      setRestaurants([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchMyRestaurants();
+  }, [fetchMyRestaurants, restaurantsVersion]);
+
+  return { restaurants, isLoading, error, refetch: fetchMyRestaurants };
 };
 
 export const useRestaurantSearch = () => {

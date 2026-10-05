@@ -15,7 +15,7 @@ function LayoutPage() {
   const [dialogType, setDialogType] = useState(null);
   const [isCreateRestaurantOpen, setIsCreateRestaurantOpen] = useState(false);
   const { setUser, isAuthenticated, userRole, logout } = useAuth();
-  const { selectedProject } = useDashboard();
+  const { selectedProject, refreshRestaurants } = useDashboard();
   const currentRoute = matches.at(-1);
   const meta = currentRoute?.handle ?? {};
   const isOwnerDashboard = useLocation().pathname === "/owner-dashboard";
@@ -53,6 +53,7 @@ function LayoutPage() {
 
   const handleCreateRestaurant = async (restaurantData) => {
     await restaurantService.createRestaurant(restaurantData);
+    refreshRestaurants();
   };
 
   return (

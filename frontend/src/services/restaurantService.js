@@ -5,6 +5,10 @@ export const restaurantService = {
     return apiService.get("/restaurant");
   },
 
+  async getMyRestaurants() {
+    return apiService.get("/restaurant/owned-restaurants");
+  },
+
   async searchRestaurants(filters) {
     const queryParams = new URLSearchParams();
 

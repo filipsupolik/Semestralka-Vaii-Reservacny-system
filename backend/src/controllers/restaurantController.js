@@ -28,6 +28,18 @@ async function searchRestaurants(req, res) {
   const result = await restaurantService.searchRestaurants(filters);
   res.status(200).json(result);
 }
+// list restaurants owned by the currently logged-in user
+async function getMyRestaurants(req, res) {
+  try {
+    const restaurants = await restaurantService.getRestaurantsByOwner(
+      req.userId,
+    );
+    res.status(200).json(restaurants);
+  } catch (error) {
+    console.error("Error fetching owner restaurants:", error);
+    res.status(500).json({ message: "Failed to fetch restaurants" });
+  }
+}
 async function createRestaurant(req, res) {
   let { name, address, description, categories } = req.body;
 
@@ -67,4 +79,9 @@ async function createRestaurant(req, res) {
   return res.status(201).json(restaurant);
 }
 
-module.exports = { getTop3, searchRestaurants, createRestaurant };
+module.exports = {
+  getTop3,
+  getMyRestaurants,
+  searchRestaurants,
+  createRestaurant,
+};

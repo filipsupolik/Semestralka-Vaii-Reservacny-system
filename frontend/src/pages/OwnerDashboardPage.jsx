@@ -1,13 +1,69 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDashboard } from "../context";
-import { mockAnnouncements } from "../data/mockData";
-import { useRestaurants } from "../hooks/useRestaurants";
+import { useMyRestaurants } from "../hooks/useRestaurants";
 import AddMenuItemDialog from "../components/AddMenuItemDialog";
+import { menuService } from "../services";
 
 function OwnerDashboardPage() {
   const { selectedProject, toggleProject } = useDashboard();
-  const { restaurants } = useRestaurants();
+  const { restaurants, isLoading } = useMyRestaurants();
+  const [menuItems, setMenuItems] = useState([]);
+  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
   const [isMenuDialogOpen, setIsMenuDialogOpen] = useState(false);
+  const [editingMenuItem, setEditingMenuItem] = useState(null);
+
+  const fetchMenuItems = async () => {
+    if (!selectedProject) {
+      setMenuItems([]);
+      return;
+    }
+    try {
+      const data = await menuService.getMenuItems(selectedProject);
+      setMenuItems(data);
+    } catch (error) {
+      console.error("Failed to fetch menu items:", error);
+      setMenuItems([]);
+    }
+  };
+
+  useEffect(() => {
+    setSelectedMenuItem(null);
+    fetchMenuItems();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedProject]);
+
+  const handleAddClick = () => {
+    setEditingMenuItem(null);
+    setIsMenuDialogOpen(true);
+  };
+
+  const handleUpdateClick = () => {
+    setEditingMenuItem(selectedMenuItem);
+    setIsMenuDialogOpen(true);
+  };
+
+  const handleDeleteClick = async () => {
+    if (!selectedMenuItem) return;
+    if (!window.confirm(`Delete "${selectedMenuItem.name}"?`)) return;
+    try {
+      await menuService.deleteMenuItem(
+        selectedProject,
+        selectedMenuItem.menuItemId,
+      );
+      setSelectedMenuItem(null);
+      fetchMenuItems();
+    } catch (error) {
+      console.error("Failed to delete menu item:", error);
+    }
+  };
+
+  const handleSaved = () => {
+    setSelectedMenuItem(null);
+    fetchMenuItems();
+  };
+
+  const actionButtonClass =
+    "cursor-pointer rounded-[25px] border-0 bg-[#00b7ff] px-[15px] py-[10px] text-base font-extrabold text-white disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-60";
 
   return (
     <main className="h-screen w-full overflow-hidden">
@@ -43,31 +99,68 @@ function OwnerDashboardPage() {
               </div>
             </div>
             <div className="flex min-h-0 flex-col">
-              <h3 className="shrink-0">Announcement</h3>
-              <div className="min-h-0 flex-1 overflow-y-auto rounded-[10px] bg-white p-[25px]">
-                {mockAnnouncements.map((announcement, index) => (
-                  <div
-                    key={index}
-                    className={`border-b-2 border-[#b8b8b8] px-[5px] py-[15px] ${index === mockAnnouncements.length - 1 ? "last:border-b-0" : ""}`}
-                  >
-                    <h4>{announcement.title}</h4>
-                    <p className="text-[#615f5f]">{announcement.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="flex min-h-0 flex-col">
               <h3 className="shrink-0">Menu</h3>
-              <div className="min-h-0 flex-1 rounded-[10px] bg-white p-[25px] flex items-center justify-center">
-                {selectedProject !== null && (
-                  <button
-                    onClick={() => setIsMenuDialogOpen(true)}
-                    className="cursor-pointer rounded-[25px] border-0 bg-[#00b7ff] px-[20px] py-[10px] text-base font-extrabold text-white hover:bg-[#0099dd]"
-                  >
-                    Add Menu Item
-                  </button>
+              <div className="min-h-0 flex-1 overflow-y-auto rounded-[10px] bg-white p-[25px]">
+                {!selectedProject ? (
+                  <p className="text-[#615f5f]">
+                    Select a restaurant to view its menu
+                  </p>
+                ) : menuItems.length === 0 ? (
+                  <p className="text-[#615f5f]">No menu items yet</p>
+                ) : (
+                  menuItems.map((item) => (
+                    <div
+                      key={item.menuItemId}
+                      className={`cursor-pointer rounded-[8px] border-b-2 border-[#b8b8b8] px-[10px] py-[15px] transition-colors last:border-b-0 ${selectedMenuItem?.menuItemId === item.menuItemId ? "border-2 border-[#00b7ff] bg-[#e8f7ff]" : "hover:bg-gray-50"}`}
+                      onClick={() =>
+                        setSelectedMenuItem(
+                          selectedMenuItem?.menuItemId === item.menuItemId
+                            ? null
+                            : item,
+                        )
+                      }
+                      role="button"
+                      tabIndex={0}
+                    >
+                      <div className="flex justify-between items-center">
+                        <h4>{item.name}</h4>
+                        <span className="font-bold text-red-500">
+                          €{item.price}
+                        </span>
+                      </div>
+                      <p className="text-[#615f5f]">{item.description}</p>
+                      {item.category && (
+                        <span className="text-sm text-gray-500">
+                          {item.category.name}
+                        </span>
+                      )}
+                    </div>
+                  ))
                 )}
               </div>
+            </div>
+            <div className="flex min-h-0 flex-col justify-center gap-[15px]">
+              <button
+                className={actionButtonClass}
+                onClick={handleAddClick}
+                disabled={selectedProject === null}
+              >
+                Add Menu Item
+              </button>
+              <button
+                className={actionButtonClass}
+                onClick={handleUpdateClick}
+                disabled={selectedMenuItem === null}
+              >
+                Update Menu Item
+              </button>
+              <button
+                className={actionButtonClass}
+                onClick={handleDeleteClick}
+                disabled={selectedMenuItem === null}
+              >
+                Delete Menu Item
+              </button>
             </div>
           </div>
         </div>
@@ -76,6 +169,8 @@ function OwnerDashboardPage() {
         open={isMenuDialogOpen}
         onClose={() => setIsMenuDialogOpen(false)}
         restaurantId={selectedProject}
+        menuItem={editingMenuItem}
+        onSaved={handleSaved}
       />
     </main>
   );

@@ -2,6 +2,8 @@ const { Router } = require("express");
 const {
   getMenuItems,
   createMenuItem,
+  updateMenuItem,
+  deleteMenuItem,
   getMenuCategories,
   createMenuCategory,
 } = require("../controllers/menuItemController");
@@ -19,6 +21,20 @@ menuItemRouter.post(
   authMiddleware,
   requireRoleMiddleware,
   createMenuItem,
+);
+
+menuItemRouter.put(
+  "/menu/:menuItemId",
+  authMiddleware,
+  requireRoleMiddleware,
+  updateMenuItem,
+);
+
+menuItemRouter.delete(
+  "/menu/:menuItemId",
+  authMiddleware,
+  requireRoleMiddleware,
+  deleteMenuItem,
 );
 
 menuItemRouter.get("/menu-categories", getMenuCategories);

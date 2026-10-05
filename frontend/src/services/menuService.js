@@ -16,6 +16,10 @@ export const menuService = {
     );
   },
 
+  async deleteMenuItem(restaurantId, menuItemId) {
+    return apiService.delete(`/restaurant/${restaurantId}/menu/${menuItemId}`);
+  },
+
   async getMenuCategories(restaurantId) {
     return apiService.get(`/restaurant/${restaurantId}/menu-categories`);
   },
