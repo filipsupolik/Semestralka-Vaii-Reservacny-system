@@ -26,4 +26,4 @@ apiService.interceptors.response.use(
   },
 );
 
-export { apiService };
+export { apiService, API_BASE_URL };

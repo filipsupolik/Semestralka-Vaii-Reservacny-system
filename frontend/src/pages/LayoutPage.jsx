@@ -13,9 +13,11 @@ function LayoutPage() {
   const matches = useMatches();
   const [isOpen, setIsOpen] = useState(false);
   const [dialogType, setDialogType] = useState(null);
-  const [isCreateRestaurantOpen, setIsCreateRestaurantOpen] = useState(false);
+  const [isRestaurantDialogOpen, setIsRestaurantDialogOpen] = useState(false);
+  const [editingRestaurant, setEditingRestaurant] = useState(null);
   const { setUser, isAuthenticated, userRole, logout } = useAuth();
-  const { selectedProject, refreshRestaurants } = useDashboard();
+  const { selectedProject, refreshRestaurants, clearSelection } =
+    useDashboard();
   const currentRoute = matches.at(-1);
   const meta = currentRoute?.handle ?? {};
   const isOwnerDashboard = useLocation().pathname === "/owner-dashboard";
@@ -51,9 +53,45 @@ function LayoutPage() {
     }
   };
 
-  const handleCreateRestaurant = async (restaurantData) => {
-    await restaurantService.createRestaurant(restaurantData);
+  const handleSaveRestaurant = async (restaurantData) => {
+    if (editingRestaurant) {
+      await restaurantService.updateRestaurant(
+        editingRestaurant.restaurantId,
+        restaurantData,
+      );
+    } else {
+      await restaurantService.createRestaurant(restaurantData);
+    }
     refreshRestaurants();
+  };
+
+  const handleUpdateRestaurantClick = async () => {
+    if (!selectedProject) return;
+    try {
+      const restaurant =
+        await restaurantService.getRestaurantById(selectedProject);
+      setEditingRestaurant(restaurant);
+      setIsRestaurantDialogOpen(true);
+    } catch (error) {
+      console.error("Failed to load restaurant:", error);
+    }
+  };
+
+  const handleDeleteRestaurantClick = async () => {
+    if (!selectedProject) return;
+    if (!window.confirm("Delete this restaurant?")) return;
+    try {
+      await restaurantService.deleteRestaurant(selectedProject);
+      clearSelection();
+      refreshRestaurants();
+    } catch (error) {
+      console.error("Failed to delete restaurant:", error);
+    }
+  };
+
+  const closeRestaurantDialog = () => {
+    setIsRestaurantDialogOpen(false);
+    setEditingRestaurant(null);
   };
 
   return (
@@ -69,19 +107,21 @@ function LayoutPage() {
               <button
                 className={actionButtonClass}
                 disabled={selectedProject !== null}
-                onClick={() => setIsCreateRestaurantOpen(true)}
+                onClick={() => setIsRestaurantDialogOpen(true)}
               >
                 New
               </button>
               <button
                 className={actionButtonClass}
-                disabled={selectedProject === null}
+                disabled={!selectedProject}
+                onClick={handleUpdateRestaurantClick}
               >
                 Update
               </button>
               <button
                 className={actionButtonClass}
-                disabled={selectedProject === null}
+                disabled={!selectedProject}
+                onClick={handleDeleteRestaurantClick}
               >
                 Delete
               </button>
@@ -100,9 +140,10 @@ function LayoutPage() {
           />
         )}
         <CreateRestaurantDialog
-          open={isCreateRestaurantOpen}
-          onClose={() => setIsCreateRestaurantOpen(false)}
-          onCreateRestaurant={handleCreateRestaurant}
+          open={isRestaurantDialogOpen}
+          onClose={closeRestaurantDialog}
+          onSubmit={handleSaveRestaurant}
+          restaurant={editingRestaurant}
         />
       </div>
       <Footer />

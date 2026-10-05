@@ -1,33 +1,64 @@
-// list 3 most recently created restaurants
+const fs = require("fs");
+const path = require("path");
 const restaurantService = require("../services/restaurantService");
 
+function parseRestaurantId(param) {
+  const restaurantId = parseInt(param, 10);
+  return Number.isNaN(restaurantId) ? null : restaurantId;
+}
+
+function unlinkImage(imageUrl) {
+  if (!imageUrl) return;
+  const filepath = path.join(__dirname, "..", "..", imageUrl);
+  fs.unlink(filepath, () => {});
+}
+
+// list 3 most recently created restaurants
 async function getTop3(req, res) {
   const restaurants = await restaurantService.getTop3Restaurants();
 
   res.status(200).json(restaurants);
 }
 
-// search or filter restaurants according to query
-async function searchRestaurants(req, res) {
+// paginated restaurant list with optional name/category filters
+async function getRestaurants(req, res) {
   const { name, category } = req.query;
-  const filters = {};
-  if (name) {
-    filters.name = {
-      contains: name,
-      mode: "insensitive",
-    };
+  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const pageSize = Math.min(
+    50,
+    Math.max(1, parseInt(req.query.pageSize, 10) || 9),
+  );
+
+  const { items, total } = await restaurantService.getRestaurants({
+    name,
+    category,
+    page,
+    pageSize,
+  });
+
+  res.status(200).json({
+    items,
+    total,
+    page,
+    pageSize,
+    totalPages: Math.ceil(total / pageSize),
+  });
+}
+
+async function getRestaurantById(req, res) {
+  const restaurantId = parseRestaurantId(req.params.restaurantId);
+  if (restaurantId === null) {
+    return res.status(400).json({ message: "Invalid restaurant id" });
   }
 
-  if (category) {
-    filters.category = {
-      some: {
-        name: category,
-      },
-    };
+  const restaurant = await restaurantService.getRestaurantById(restaurantId);
+  if (!restaurant || restaurant.deletedAt) {
+    return res.status(404).json({ message: "Restaurant not found" });
   }
-  const result = await restaurantService.searchRestaurants(filters);
-  res.status(200).json(result);
+
+  res.status(200).json(restaurant);
 }
+
 // list restaurants owned by the currently logged-in user
 async function getMyRestaurants(req, res) {
   try {
@@ -40,24 +71,27 @@ async function getMyRestaurants(req, res) {
     res.status(500).json({ message: "Failed to fetch restaurants" });
   }
 }
-async function createRestaurant(req, res) {
-  let { name, address, description, categories } = req.body;
 
+function parseCategories(rawCategories) {
+  let categories;
   try {
-    categories = JSON.parse(categories);
+    categories = JSON.parse(rawCategories);
   } catch {
-    return res.status(400).json({
-      message: "Invalid categories format",
-    });
+    return null;
   }
 
-  if (
-    !name ||
-    !address ||
-    !description ||
-    !Array.isArray(categories) ||
-    categories.some((category) => !category)
-  ) {
+  if (!Array.isArray(categories) || categories.some((c) => !c)) {
+    return null;
+  }
+
+  return categories;
+}
+
+async function createRestaurant(req, res) {
+  const { name, address, description } = req.body;
+  const categories = parseCategories(req.body.categories);
+
+  if (!name || !address || !description || !categories) {
     return res.status(400).json({
       message: "Name, address, description, and categories are required",
     });
@@ -79,9 +113,76 @@ async function createRestaurant(req, res) {
   return res.status(201).json(restaurant);
 }
 
+async function updateRestaurant(req, res) {
+  const restaurantId = parseRestaurantId(req.params.restaurantId);
+  if (restaurantId === null) {
+    return res.status(400).json({ message: "Invalid restaurant id" });
+  }
+
+  const restaurant = await restaurantService.getRestaurantById(restaurantId);
+  if (!restaurant || restaurant.deletedAt) {
+    return res.status(404).json({ message: "Restaurant not found" });
+  }
+
+  if (restaurant.ownerId !== req.userId) {
+    return res.status(403).json({ message: "Forbidden" });
+  }
+
+  const { name, address, description } = req.body;
+  const categories = parseCategories(req.body.categories);
+
+  if (!name || !address || !description || !categories) {
+    return res.status(400).json({
+      message: "Name, address, description, and categories are required",
+    });
+  }
+
+  const imageUrl = req.file
+    ? `/uploads/restaurants/${req.file.filename}`
+    : undefined;
+
+  const updated = await restaurantService.updateRestaurant({
+    restaurantId,
+    name,
+    address,
+    description,
+    categories,
+    imageUrl,
+  });
+
+  if (req.file) {
+    unlinkImage(restaurant.imageUrl);
+  }
+
+  return res.status(200).json(updated);
+}
+
+async function deleteRestaurant(req, res) {
+  const restaurantId = parseRestaurantId(req.params.restaurantId);
+  if (restaurantId === null) {
+    return res.status(400).json({ message: "Invalid restaurant id" });
+  }
+
+  const restaurant = await restaurantService.getRestaurantById(restaurantId);
+  if (!restaurant || restaurant.deletedAt) {
+    return res.status(404).json({ message: "Restaurant not found" });
+  }
+
+  if (restaurant.ownerId !== req.userId) {
+    return res.status(403).json({ message: "Forbidden" });
+  }
+
+  await restaurantService.deleteRestaurant(restaurantId);
+
+  return res.status(200).json({ message: "Restaurant deleted" });
+}
+
 module.exports = {
   getTop3,
+  getRestaurants,
+  getRestaurantById,
   getMyRestaurants,
-  searchRestaurants,
   createRestaurant,
+  updateRestaurant,
+  deleteRestaurant,
 };

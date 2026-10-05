@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { restaurantService } from "../services";
-import { mockRestaurants } from "../data/mockData";
 import { useDashboard } from "../context";
 
-export const useRestaurants = (useMock = false) => {
+export const useTopRestaurants = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -12,25 +11,56 @@ export const useRestaurants = (useMock = false) => {
     const fetchRestaurants = async () => {
       try {
         setIsLoading(true);
-        if (useMock) {
-          setRestaurants(mockRestaurants);
-        } else {
-          const data = await restaurantService.getTopRestaurants();
-          setRestaurants(data);
-        }
+        const data = await restaurantService.getTopRestaurants();
+        setRestaurants(data);
       } catch (err) {
         setError(err.message);
-        // Fallback to mock data on error
-        setRestaurants(mockRestaurants);
+        setRestaurants([]);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchRestaurants();
-  }, [useMock]);
+  }, []);
 
   return { restaurants, isLoading, error };
+};
+
+export const useRestaurants = ({ page, pageSize, name, category } = {}) => {
+  const [restaurants, setRestaurants] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchRestaurants = async () => {
+      try {
+        setIsLoading(true);
+        const data = await restaurantService.getRestaurants({
+          page,
+          pageSize,
+          name,
+          category,
+        });
+        setRestaurants(data.items);
+        setTotal(data.total);
+        setTotalPages(data.totalPages);
+      } catch (err) {
+        setError(err.message);
+        setRestaurants([]);
+        setTotal(0);
+        setTotalPages(0);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchRestaurants();
+  }, [page, pageSize, name, category]);
+
+  return { restaurants, total, totalPages, isLoading, error };
 };
 
 export const useMyRestaurants = () => {
@@ -57,25 +87,4 @@ export const useMyRestaurants = () => {
   }, [fetchMyRestaurants, restaurantsVersion]);
 
   return { restaurants, isLoading, error, refetch: fetchMyRestaurants };
-};
-
-export const useRestaurantSearch = () => {
-  const [results, setResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  const search = async (filters) => {
-    try {
-      setIsLoading(true);
-      const data = await restaurantService.searchRestaurants(filters);
-      setResults(data);
-    } catch (err) {
-      setError(err.message);
-      setResults([]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return { results, search, isLoading, error };
 };

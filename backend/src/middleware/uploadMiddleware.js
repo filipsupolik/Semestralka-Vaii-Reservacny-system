@@ -26,35 +26,49 @@ const upload = multer({
   fileFilter,
 });
 
-const processImage = async (req, res, next) => {
-  if (!req.file) {
-    return next();
-  }
+const createProcessImage = ({ folder, width, height }) => {
+  return async (req, res, next) => {
+    if (!req.file) {
+      return next();
+    }
 
-  try {
-    const timestamp = new Date()
-      .toISOString()
-      .replace(/[:.]/g, "-")
-      .slice(0, 10);
-    const randomSuffix = Math.random().toString(36).substring(2, 8);
-    const filename = `${timestamp}-${randomSuffix}${path.extname(req.file.originalname)}`;
-    const filepath = `uploads/restaurants/${filename}`;
+    try {
+      const timestamp = new Date()
+        .toISOString()
+        .replace(/[:.]/g, "-")
+        .slice(0, 10);
+      const randomSuffix = Math.random().toString(36).substring(2, 8);
+      const filename = `${timestamp}-${randomSuffix}${path.extname(req.file.originalname)}`;
+      const filepath = `uploads/${folder}/${filename}`;
 
-    await sharp(req.file.buffer)
-      .resize(800, 600, {
-        fit: "cover",
-        position: "center",
-      })
-      .jpeg({ quality: 80 })
-      .toFile(filepath);
+      await sharp(req.file.buffer)
+        .resize(width, height, {
+          fit: "cover",
+          position: "center",
+        })
+        .jpeg({ quality: 80 })
+        .toFile(filepath);
 
-    req.file.filename = filename;
-    req.file.path = filepath;
+      req.file.filename = filename;
+      req.file.path = filepath;
 
-    next();
-  } catch (error) {
-    next(error);
-  }
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
 };
 
-module.exports = { upload, processImage };
+const processImage = createProcessImage({
+  folder: "restaurants",
+  width: 800,
+  height: 600,
+});
+
+const processCategoryImage = createProcessImage({
+  folder: "categories",
+  width: 128,
+  height: 128,
+});
+
+module.exports = { upload, processImage, processCategoryImage };

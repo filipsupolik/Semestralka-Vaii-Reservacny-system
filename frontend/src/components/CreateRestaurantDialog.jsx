@@ -12,8 +12,9 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { categoryService } from "../services";
+import { API_BASE_URL } from "../services/api";
 
-const CreateRestaurantDialog = ({ open, onClose, onCreateRestaurant }) => {
+const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
   const [formData, setFormData] = useState({
     name: "",
     address: "",
@@ -41,8 +42,32 @@ const CreateRestaurantDialog = ({ open, onClose, onCreateRestaurant }) => {
 
     if (open) {
       fetchCategories();
+      if (restaurant) {
+        setFormData({
+          name: restaurant.name || "",
+          address: restaurant.address || "",
+          description: restaurant.description || "",
+          categories: (restaurant.categories || []).map((rc) => ({
+            categoryId: rc.categoryId,
+          })),
+          image: null,
+        });
+        setImagePreview(
+          restaurant.imageUrl ? `${API_BASE_URL}${restaurant.imageUrl}` : null,
+        );
+      } else {
+        setFormData({
+          name: "",
+          address: "",
+          description: "",
+          categories: [],
+          image: null,
+        });
+        setImagePreview(null);
+      }
+      setErrors({});
     }
-  }, [open]);
+  }, [open, restaurant]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -106,7 +131,7 @@ const CreateRestaurantDialog = ({ open, onClose, onCreateRestaurant }) => {
     }
 
     try {
-      await onCreateRestaurant(formData);
+      await onSubmit(formData);
       handleClose();
     } catch (error) {
       setErrors((prev) => ({ ...prev, submit: error.message }));
@@ -128,7 +153,9 @@ const CreateRestaurantDialog = ({ open, onClose, onCreateRestaurant }) => {
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Create New Restaurant</DialogTitle>
+      <DialogTitle>
+        {restaurant ? "Update Restaurant" : "Create New Restaurant"}
+      </DialogTitle>
       <DialogContent>
         <Box component="form" sx={{ mt: 2 }}>
           <TextField
@@ -243,7 +270,7 @@ const CreateRestaurantDialog = ({ open, onClose, onCreateRestaurant }) => {
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
         <Button onClick={handleSubmit} variant="contained" color="primary">
-          Create Restaurant
+          {restaurant ? "Update Restaurant" : "Create Restaurant"}
         </Button>
       </DialogActions>
     </Dialog>

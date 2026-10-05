@@ -14,8 +14,8 @@ import SearchBar from "./SearchBar";
 function ShowAllCategoriesDialog({ isOpen, handleClose, categories }) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value.toLowerCase());
+  const handleSearchChange = (value) => {
+    setSearchTerm(value.toLowerCase());
   };
 
   const filteredCategories = categories
@@ -26,10 +26,13 @@ function ShowAllCategoriesDialog({ isOpen, handleClose, categories }) {
     <Dialog open={isOpen} onClose={handleClose} fullWidth maxWidth="sm">
       <DialogTitle>All Categories</DialogTitle>
       <DialogContent>
-        <SearchBar title={"Prehladaj kategorie"} />
+        <SearchBar
+          title={"Prehladaj kategorie"}
+          onSearch={handleSearchChange}
+        />
         <Grid container spacing={4}>
           {filteredCategories.map((category) => (
-            <Grid item xs={12} sm={4} key={category.id}>
+            <Grid item xs={12} sm={4} key={category.categoryId ?? category.id}>
               <Typography>{category.name}</Typography>
             </Grid>
           ))}

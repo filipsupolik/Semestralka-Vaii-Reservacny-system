@@ -1,11 +1,11 @@
 import React from "react";
 import RestaurantCard from "../components/RestaurantCard";
 import { useNavigate } from "react-router-dom";
-import { useRestaurants } from "../hooks";
+import { useTopRestaurants } from "../hooks";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { restaurants, isLoading } = useRestaurants(true);
+  const { restaurants, isLoading } = useTopRestaurants();
 
   const getRestaurantCuisine = (restaurant) => {
     if (restaurant.categories && restaurant.categories.length > 0) {
@@ -53,7 +53,7 @@ const HomePage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {restaurants.slice(0, 3).map((restaurant) => (
+              {restaurants.map((restaurant) => (
                 <RestaurantCard
                   key={restaurant.restaurantId || restaurant.id}
                   id={restaurant.restaurantId || restaurant.id}

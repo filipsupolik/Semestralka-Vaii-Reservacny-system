@@ -1,6 +1,7 @@
 export {
   useRestaurants,
+  useTopRestaurants,
   useMyRestaurants,
-  useRestaurantSearch,
 } from "./useRestaurants";
+export { useCategories } from "./useCategories";
 export { useMenuItems, useMenuCategories } from "./useMenu";
