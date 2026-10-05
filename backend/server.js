@@ -8,6 +8,7 @@ const restaurantRouter = require("./src/routes/restaurantRouter");
 const authRouter = require("./src/routes/authRouter");
 const categoryRouter = require("./src/routes/categoryRouter");
 const menuItemRouter = require("./src/routes/menuItemRouter");
+const menuCategoryRouter = require("./src/routes/menuCategoryRouter");
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use("/auth", authRouter);
 app.use("/restaurant", restaurantRouter);
 app.use("/restaurant/:restaurantId", menuItemRouter);
 app.use("/category", categoryRouter);
+app.use("/menu-categories", menuCategoryRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

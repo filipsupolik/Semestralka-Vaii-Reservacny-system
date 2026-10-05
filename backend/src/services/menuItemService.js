@@ -65,16 +65,6 @@ async function getMenuCategories(restaurantId) {
     where: { restaurantId },
   });
 }
-
-async function createMenuCategory({ name, restaurantId }) {
-  return prisma.menuCategory.create({
-    data: {
-      name,
-      restaurantId,
-    },
-  });
-}
-
 module.exports = {
   getMenuItems,
   createMenuItem,
@@ -82,5 +72,4 @@ module.exports = {
   deleteMenuItem,
   getMenuItemWithOwner,
   getMenuCategories,
-  createMenuCategory,
 };

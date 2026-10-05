@@ -5,7 +5,6 @@ const {
   updateMenuItem,
   deleteMenuItem,
   getMenuCategories,
-  createMenuCategory,
 } = require("../controllers/menuItemController");
 const {
   authMiddleware,
@@ -37,13 +36,6 @@ menuItemRouter.delete(
   deleteMenuItem,
 );
 
-menuItemRouter.get("/menu-categories", getMenuCategories);
-
-menuItemRouter.post(
-  "/menu-categories",
-  authMiddleware,
-  requireRoleMiddleware,
-  createMenuCategory,
-);
+menuItemRouter.get("/categories", getMenuCategories);
 
 module.exports = menuItemRouter;

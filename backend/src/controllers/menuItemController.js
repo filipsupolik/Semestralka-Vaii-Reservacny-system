@@ -113,33 +113,10 @@ async function getMenuCategories(req, res) {
     res.status(500).json({ message: "Failed to fetch menu categories" });
   }
 }
-
-async function createMenuCategory(req, res) {
-  try {
-    const { restaurantId } = req.params;
-    const { name } = req.body;
-
-    if (!name) {
-      return res.status(400).json({ message: "Name is required" });
-    }
-
-    const category = await menuItemService.createMenuCategory({
-      name,
-      restaurantId: parseInt(restaurantId),
-    });
-
-    res.status(201).json(category);
-  } catch (error) {
-    console.error("Error creating menu category:", error);
-    res.status(500).json({ message: "Failed to create menu category" });
-  }
-}
-
 module.exports = {
   getMenuItems,
   createMenuItem,
   updateMenuItem,
   deleteMenuItem,
   getMenuCategories,
-  createMenuCategory,
 };

@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { menuService } from "../services";
+import { menuService, menuCategoryService } from "../services";
 import { useDashboard } from "./DashboardContext";
 
 const MenuContext = createContext(null);
@@ -30,7 +30,7 @@ export const MenuProvider = ({ children }) => {
     try {
       const [items, menuCategories] = await Promise.all([
         menuService.getMenuItems(selectedProject),
-        menuService.getMenuCategories(selectedProject),
+        menuCategoryService.getMenuCategories(selectedProject),
       ]);
       setMenuItems(items);
       setCategories(menuCategories);

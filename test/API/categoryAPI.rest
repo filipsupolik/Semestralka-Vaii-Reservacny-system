@@ -4,3 +4,6 @@ Content-Type: application/json
 {
     "name": "Asian"
 }
+
+###
+GET http://localhost:3000/menu-categories
