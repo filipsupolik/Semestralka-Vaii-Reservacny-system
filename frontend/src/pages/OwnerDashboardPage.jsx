@@ -1,12 +1,13 @@
+import { useState } from "react";
 import { useDashboard } from "../context";
-import {
-  mockProjects,
-  mockAnnouncements,
-  mockTrendingUsers,
-} from "../data/mockData";
+import { mockAnnouncements } from "../data/mockData";
+import { useRestaurants } from "../hooks/useRestaurants";
+import AddMenuItemDialog from "../components/AddMenuItemDialog";
 
 function OwnerDashboardPage() {
   const { selectedProject, toggleProject } = useDashboard();
+  const { restaurants } = useRestaurants();
+  const [isMenuDialogOpen, setIsMenuDialogOpen] = useState(false);
 
   return (
     <main className="h-screen w-full overflow-hidden">
@@ -16,23 +17,27 @@ function OwnerDashboardPage() {
             <div className="row-span-2 min-w-0">
               <h3>Your restaurants</h3>
               <div className="grid grid-cols-2 auto-rows-fr gap-[15px]">
-                {mockProjects.map((project) => (
+                {restaurants.map((restaurant) => (
                   <div
-                    key={project.name}
-                    className={`flex min-w-0 cursor-pointer flex-col rounded-[15px] border-l-[5px] border-[#ffa600] bg-white p-5 transition-transform ${selectedProject === project.name ? "-translate-y-1 border-2 border-[#00b7ff] shadow-lg" : "hover:-translate-y-1 hover:shadow-md"}`}
-                    onClick={() => toggleProject(project.name)}
+                    key={restaurant.restaurantId}
+                    className={`flex min-w-0 cursor-pointer flex-col rounded-[15px] border-l-[5px] border-[#ffa600] bg-white p-5 transition-transform ${selectedProject === restaurant.restaurantId ? "-translate-y-1 border-2 border-[#00b7ff] shadow-lg" : "hover:-translate-y-1 hover:shadow-md"}`}
+                    onClick={() => toggleProject(restaurant.restaurantId)}
                     role="button"
                     tabIndex={0}
                   >
-                    <h3>{project.name}</h3>
+                    <h3>{restaurant.name}</h3>
                     <p className="mb-[25px] text-[#615f5f]">
-                      {project.description}
+                      {restaurant.description}
                     </p>
-                    <div className="mt-auto mr-[5px] ml-auto">
-                      <i className="fa-regular fa-star"></i>
-                      <i className="fa-regular fa-eye"></i>
-                      <i className="fa-solid fa-share-nodes"></i>
-                    </div>
+                    <img
+                      src={
+                        restaurant.imageUrl
+                          ? `http://localhost:3000${restaurant.imageUrl}`
+                          : ""
+                      }
+                      alt={restaurant.name}
+                      className="w-full h-40 object-cover rounded"
+                    />
                   </div>
                 ))}
               </div>
@@ -52,26 +57,26 @@ function OwnerDashboardPage() {
               </div>
             </div>
             <div className="flex min-h-0 flex-col">
-              <h3 className="shrink-0">Trending</h3>
-              <div className="min-h-0 flex-1 overflow-y-auto rounded-[10px] bg-white py-[5px]">
-                {mockTrendingUsers.map((user, index) => (
-                  <div key={index} className="m-[15px] flex items-center">
-                    <img
-                      className="m-[5px] mx-[15px] h-10 w-10 rounded-full"
-                      src="./resource/computer-psyduck.webp"
-                      alt="profile"
-                    />
-                    <div>
-                      <p className="username">{user.username}</p>
-                      <p>{user.project}</p>
-                    </div>
-                  </div>
-                ))}
+              <h3 className="shrink-0">Menu</h3>
+              <div className="min-h-0 flex-1 rounded-[10px] bg-white p-[25px] flex items-center justify-center">
+                {selectedProject !== null && (
+                  <button
+                    onClick={() => setIsMenuDialogOpen(true)}
+                    className="cursor-pointer rounded-[25px] border-0 bg-[#00b7ff] px-[20px] py-[10px] text-base font-extrabold text-white hover:bg-[#0099dd]"
+                  >
+                    Add Menu Item
+                  </button>
+                )}
               </div>
             </div>
           </div>
         </div>
       </section>
+      <AddMenuItemDialog
+        open={isMenuDialogOpen}
+        onClose={() => setIsMenuDialogOpen(false)}
+        restaurantId={selectedProject}
+      />
     </main>
   );
 }

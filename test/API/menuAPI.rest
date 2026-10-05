@@ -1,0 +1,4 @@
+GET http://localhost:3000/restaurant/1/menu
+
+###
+GET http://localhost:3000/restaurant/1/menu-categories

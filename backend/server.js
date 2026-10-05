@@ -7,6 +7,7 @@ const path = require("path");
 const restaurantRouter = require("./src/routes/restaurantRouter");
 const authRouter = require("./src/routes/authRouter");
 const categoryRouter = require("./src/routes/categoryRouter");
+const menuItemRouter = require("./src/routes/menuItemRouter");
 
 dotenv.config();
 
@@ -15,11 +16,14 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
-app.use(helmet());
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(morgan("dev"));
+
+// Serve static files with CORS
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/auth", authRouter);
 app.use("/restaurant", restaurantRouter);
+app.use("/restaurant/:restaurantId", menuItemRouter);
 app.use("/category", categoryRouter);
 
 app.listen(PORT, () => {

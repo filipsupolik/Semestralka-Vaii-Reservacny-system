@@ -32,10 +32,10 @@ function MenuPageNavigation({ menuCategories }) {
         )}
         {visibleCategories.map((category) => (
           <div
-            key={category.id}
+            key={category.categoryId}
             className="text-lg font-medium text-gray-700 hover:bg-white px-6 py-4 rounded-lg hover:shadow cursor-pointer whitespace-nowrap"
           >
-            <a href={`#${category.id}`}>{category.name}</a>
+            <a href={`#${category.categoryId}`}>{category.name}</a>
           </div>
         ))}
         {startIndex + itemsPerPage < menuCategories.length && (
