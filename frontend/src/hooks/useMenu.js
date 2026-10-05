@@ -8,6 +8,11 @@ export const useMenuItems = (restaurantId, useMock = true) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (!restaurantId) {
+      setMenuItems([]);
+      setIsLoading(false);
+      return;
+    }
     const fetchMenuItems = async () => {
       try {
         setIsLoading(true);

@@ -1,36 +1,21 @@
-import { useState, useEffect } from "react";
-import { useDashboard } from "../context";
+import { useState } from "react";
+import { useDashboard, useMenu } from "../context";
 import { useMyRestaurants } from "../hooks/useRestaurants";
 import AddMenuItemDialog from "../components/AddMenuItemDialog";
-import { menuService } from "../services";
 
 function OwnerDashboardPage() {
   const { selectedProject, toggleProject } = useDashboard();
-  const { restaurants, isLoading } = useMyRestaurants();
-  const [menuItems, setMenuItems] = useState([]);
-  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
+  const { restaurants } = useMyRestaurants();
+  const {
+    menuItems,
+    isLoading,
+    error,
+    selectedMenuItem,
+    setSelectedMenuItem,
+    deleteMenuItem,
+  } = useMenu();
   const [isMenuDialogOpen, setIsMenuDialogOpen] = useState(false);
   const [editingMenuItem, setEditingMenuItem] = useState(null);
-
-  const fetchMenuItems = async () => {
-    if (!selectedProject) {
-      setMenuItems([]);
-      return;
-    }
-    try {
-      const data = await menuService.getMenuItems(selectedProject);
-      setMenuItems(data);
-    } catch (error) {
-      console.error("Failed to fetch menu items:", error);
-      setMenuItems([]);
-    }
-  };
-
-  useEffect(() => {
-    setSelectedMenuItem(null);
-    fetchMenuItems();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedProject]);
 
   const handleAddClick = () => {
     setEditingMenuItem(null);
@@ -46,12 +31,7 @@ function OwnerDashboardPage() {
     if (!selectedMenuItem) return;
     if (!window.confirm(`Delete "${selectedMenuItem.name}"?`)) return;
     try {
-      await menuService.deleteMenuItem(
-        selectedProject,
-        selectedMenuItem.menuItemId,
-      );
-      setSelectedMenuItem(null);
-      fetchMenuItems();
+      await deleteMenuItem(selectedMenuItem.menuItemId);
     } catch (error) {
       console.error("Failed to delete menu item:", error);
     }
@@ -59,7 +39,6 @@ function OwnerDashboardPage() {
 
   const handleSaved = () => {
     setSelectedMenuItem(null);
-    fetchMenuItems();
   };
 
   const actionButtonClass =
@@ -85,6 +64,10 @@ function OwnerDashboardPage() {
                     <p className="mb-[25px] text-[#615f5f]">
                       {restaurant.description}
                     </p>
+
+                    <p className="mb-[25px] text-[#615f5f]">
+                      {restaurant.address}
+                    </p>
                     <img
                       src={
                         restaurant.imageUrl
@@ -105,6 +88,10 @@ function OwnerDashboardPage() {
                   <p className="text-[#615f5f]">
                     Select a restaurant to view its menu
                   </p>
+                ) : isLoading ? (
+                  <p className="text-[#615f5f]">Loading menu...</p>
+                ) : error ? (
+                  <p className="text-red-500">{error}</p>
                 ) : menuItems.length === 0 ? (
                   <p className="text-[#615f5f]">No menu items yet</p>
                 ) : (
@@ -168,7 +155,6 @@ function OwnerDashboardPage() {
       <AddMenuItemDialog
         open={isMenuDialogOpen}
         onClose={() => setIsMenuDialogOpen(false)}
-        restaurantId={selectedProject}
         menuItem={editingMenuItem}
         onSaved={handleSaved}
       />

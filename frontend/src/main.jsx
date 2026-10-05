@@ -2,7 +2,12 @@ import "./index.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { AuthProvider, CartProvider, DashboardProvider } from "./context";
+import {
+  AuthProvider,
+  CartProvider,
+  DashboardProvider,
+  MenuProvider,
+} from "./context";
 import LayoutPage from "./pages/LayoutPage";
 import HomePage from "./pages/HomePage";
 import MenuPage from "./pages/MenuPage";
@@ -79,7 +84,9 @@ createRoot(document.getElementById("root")).render(
     <AuthProvider>
       <CartProvider>
         <DashboardProvider>
-          <RouterProvider router={router} />
+          <MenuProvider>
+            <RouterProvider router={router} />
+          </MenuProvider>
         </DashboardProvider>
       </CartProvider>
     </AuthProvider>

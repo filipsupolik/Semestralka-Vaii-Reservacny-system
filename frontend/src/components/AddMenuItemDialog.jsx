@@ -14,24 +14,21 @@ import {
   InputLabel,
   CircularProgress,
 } from "@mui/material";
-import { menuService } from "../services";
+import { useMenu } from "../context";
 
-const AddMenuItemDialog = ({
-  open,
-  onClose,
-  restaurantId,
-  menuItem = null,
-  onSaved,
-}) => {
+const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
+  const {
+    categories,
+    isLoading: isLoadingCategories,
+    createMenuItem,
+    updateMenuItem,
+  } = useMenu();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: "",
     categoryId: "",
-    newCategory: "",
   });
-  const [categories, setCategories] = useState([]);
-  const [isLoadingCategories, setIsLoadingCategories] = useState(false);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -41,28 +38,9 @@ const AddMenuItemDialog = ({
         description: menuItem.description || "",
         price: menuItem.price?.toString() || "",
         categoryId: menuItem.categoryId || "",
-        newCategory: "",
       });
     }
   }, [open, menuItem]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      setIsLoadingCategories(true);
-      try {
-        const data = await menuService.getMenuCategories(restaurantId);
-        setCategories(data);
-      } catch (error) {
-        console.error("Failed to fetch menu categories:", error);
-      } finally {
-        setIsLoadingCategories(false);
-      }
-    };
-
-    if (open && restaurantId) {
-      fetchCategories();
-    }
-  }, [open, restaurantId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -79,8 +57,7 @@ const AddMenuItemDialog = ({
       newErrors.description = "Description is required";
     if (!formData.price || isNaN(parseFloat(formData.price)))
       newErrors.price = "Valid price is required";
-    if (!formData.categoryId && !formData.newCategory.trim())
-      newErrors.categoryId = "Please select or create a category";
+    if (!formData.categoryId) newErrors.categoryId = "Please select a category";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -90,13 +67,6 @@ const AddMenuItemDialog = ({
     try {
       let categoryId = formData.categoryId;
 
-      if (formData.newCategory.trim()) {
-        const newCat = await menuService.createMenuCategory(restaurantId, {
-          name: formData.newCategory.trim(),
-        });
-        categoryId = newCat.categoryId;
-      }
-
       const payload = {
         name: formData.name,
         description: formData.description,
@@ -105,12 +75,8 @@ const AddMenuItemDialog = ({
       };
 
       const savedItem = menuItem
-        ? await menuService.updateMenuItem(
-            restaurantId,
-            menuItem.menuItemId,
-            payload,
-          )
-        : await menuService.createMenuItem(restaurantId, payload);
+        ? await updateMenuItem(menuItem.menuItemId, payload)
+        : await createMenuItem(payload);
 
       if (onSaved) {
         onSaved(savedItem);
@@ -127,7 +93,6 @@ const AddMenuItemDialog = ({
       description: "",
       price: "",
       categoryId: "",
-      newCategory: "",
     });
     setErrors({});
     onClose();
@@ -207,15 +172,6 @@ const AddMenuItemDialog = ({
               </Typography>
             )}
           </FormControl>
-
-          <TextField
-            fullWidth
-            label="Or create new category"
-            name="newCategory"
-            value={formData.newCategory}
-            onChange={handleInputChange}
-            margin="normal"
-          />
         </Box>
         {errors.submit && (
           <Typography color="error" sx={{ mt: 2 }}>
