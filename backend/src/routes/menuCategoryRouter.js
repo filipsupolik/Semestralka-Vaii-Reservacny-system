@@ -1,8 +1,5 @@
 const { Router } = require("express");
-const {
-  authMiddleware,
-  requireRoleMiddleware,
-} = require("../middleware/authMiddleware");
+const { authMiddleware, requireRole } = require("../middleware/authMiddleware");
 const {
   createMenuCategory,
   getAllCategories,
@@ -10,12 +7,17 @@ const {
 
 const menuCategoryRouter = Router();
 
-menuCategoryRouter.get("/", getAllCategories);
+menuCategoryRouter.get(
+  "/",
+  authMiddleware,
+  requireRole("RESTAURANT_OWNER"),
+  getAllCategories,
+);
 
 menuCategoryRouter.post(
   "/",
   authMiddleware,
-  requireRoleMiddleware,
+  requireRole("RESTAURANT_OWNER"),
   createMenuCategory,
 );
 

@@ -19,12 +19,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const response = await authService.login(email, password);
+    const loggedUser = await authService.login(email, password);
     setUser({
-      role: response.role,
-      email: response.email,
+      role: loggedUser.user.role,
+      email: loggedUser.user.email,
     });
-    return response;
+    return loggedUser;
   };
 
   const register = async (userData) => {

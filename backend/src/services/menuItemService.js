@@ -61,7 +61,22 @@ async function getMenuItemWithOwner(menuItemId) {
 }
 
 async function getMenuCategories(restaurantId) {
+  const restaurant = await prisma.restaurant.findUnique({
+    where: { restaurantId },
+    select: { ownerId: true },
+  });
+
+  if (!restaurant) {
+    return [];
+  }
+
   return prisma.menuCategory.findMany({
+    where: { ownerId: restaurant.ownerId },
+  });
+}
+
+async function getRestaurantById(restaurantId) {
+  return prisma.restaurant.findUnique({
     where: { restaurantId },
   });
 }
@@ -72,4 +87,5 @@ module.exports = {
   deleteMenuItem,
   getMenuItemWithOwner,
   getMenuCategories,
+  getRestaurantById,
 };

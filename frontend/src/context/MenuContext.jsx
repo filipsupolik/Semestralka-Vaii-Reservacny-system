@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useCallback,
   useContext,
@@ -30,7 +30,7 @@ export const MenuProvider = ({ children }) => {
     try {
       const [items, menuCategories] = await Promise.all([
         menuService.getMenuItems(selectedProject),
-        menuCategoryService.getMenuCategories(selectedProject),
+        menuService.getMenuCategories(selectedProject),
       ]);
       setMenuItems(items);
       setCategories(menuCategories);
@@ -48,7 +48,14 @@ export const MenuProvider = ({ children }) => {
     refreshMenu();
   }, [refreshMenu]);
 
+  const ensureRestaurantSelected = () => {
+    if (!selectedProject) {
+      throw new Error("Select a restaurant first");
+    }
+  };
+
   const createMenuItem = async (menuItemData) => {
+    ensureRestaurantSelected();
     const createdItem = await menuService.createMenuItem(
       selectedProject,
       menuItemData,
@@ -58,6 +65,7 @@ export const MenuProvider = ({ children }) => {
   };
 
   const updateMenuItem = async (menuItemId, menuItemData) => {
+    ensureRestaurantSelected();
     const updatedItem = await menuService.updateMenuItem(
       selectedProject,
       menuItemId,
@@ -68,9 +76,17 @@ export const MenuProvider = ({ children }) => {
   };
 
   const deleteMenuItem = async (menuItemId) => {
+    ensureRestaurantSelected();
     await menuService.deleteMenuItem(selectedProject, menuItemId);
     setSelectedMenuItem(null);
     await refreshMenu();
+  };
+
+  const createCategory = async (name) => {
+    ensureRestaurantSelected();
+    const createdCategory = await menuCategoryService.createCategory(name);
+    await refreshMenu();
+    return createdCategory;
   };
 
   const value = {
@@ -84,6 +100,7 @@ export const MenuProvider = ({ children }) => {
     createMenuItem,
     updateMenuItem,
     deleteMenuItem,
+    createCategory,
   };
 
   return <MenuContext.Provider value={value}>{children}</MenuContext.Provider>;

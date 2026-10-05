@@ -1,7 +1,11 @@
 import { apiService } from "./api";
 
 export const menuCategoryService = {
-  async getMenuCategories(restaurantId) {
-    return apiService.get(`/restaurant/${restaurantId}/menu-categories`);
+  async getAllMenuItemCategories() {
+    return apiService.get(`/menu-categories`);
+  },
+
+  async createCategory(name) {
+    return apiService.post(`/menu-categories`, { name });
   },
 };

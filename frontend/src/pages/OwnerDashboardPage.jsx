@@ -17,7 +17,13 @@ function OwnerDashboardPage() {
   const [isMenuDialogOpen, setIsMenuDialogOpen] = useState(false);
   const [editingMenuItem, setEditingMenuItem] = useState(null);
 
+  const selectedRestaurant = restaurants.find(
+    (restaurant) => restaurant.restaurantId === selectedProject,
+  );
+  const canAddMenuItem = Boolean(selectedRestaurant);
+
   const handleAddClick = () => {
+    if (!canAddMenuItem) return;
     setEditingMenuItem(null);
     setIsMenuDialogOpen(true);
   };
@@ -130,7 +136,7 @@ function OwnerDashboardPage() {
               <button
                 className={actionButtonClass}
                 onClick={handleAddClick}
-                disabled={selectedProject === null}
+                disabled={!canAddMenuItem}
               >
                 Add Menu Item
               </button>

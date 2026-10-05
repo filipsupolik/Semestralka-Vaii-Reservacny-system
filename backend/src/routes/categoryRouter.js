@@ -4,9 +4,11 @@ const {
   addCategory,
 } = require("../controllers/categoryController");
 
+const { authMiddleware, requireRole } = require("../middleware/authMiddleware");
+
 const categoryRouter = Router();
 
 categoryRouter.get("/", getAllCategories);
-categoryRouter.post("/", addCategory);
+categoryRouter.post("/", authMiddleware, requireRole("ADMIN"), addCategory);
 
 module.exports = categoryRouter;

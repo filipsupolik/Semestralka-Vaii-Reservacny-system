@@ -109,7 +109,8 @@
     "zod": "^4.3.6"
   },
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "seed": "node prisma/seed.js"
   },
   "keywords": [],
   "author": "",

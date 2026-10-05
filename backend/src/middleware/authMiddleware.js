@@ -17,19 +17,21 @@ function authMiddleware(req, res, next) {
     }
 
     req.userId = decoded.userId;
+    req.userRole = decoded.role;
     next();
   });
 }
 
-function requireRoleMiddleware(req, res, next) {
-  const authRole = req.headers["x-user-role"];
-  if (authRole !== "RESTAURANT_OWNER") {
-    return res.status(403).json({
-      message: "Forbidden",
-    });
-  }
+function requireRole(...allowedRoles) {
+  return (req, res, next) => {
+    if (!allowedRoles.includes(req.userRole)) {
+      return res.status(403).json({
+        message: "Forbidden",
+      });
+    }
 
-  next();
+    next();
+  };
 }
 
-module.exports = { authMiddleware, requireRoleMiddleware };
+module.exports = { authMiddleware, requireRole };

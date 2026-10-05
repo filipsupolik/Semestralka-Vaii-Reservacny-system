@@ -23,9 +23,13 @@ async function checkPassword(req, user) {
 }
 
 function login(user) {
-  const token = jwt.sign({ userId: user.userId }, process.env.JWT_SECRET, {
-    expiresIn: "24h",
-  });
+  const token = jwt.sign(
+    { userId: user.userId, role: user.role },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "24h",
+    },
+  );
   return {
     token,
     user: {
@@ -35,8 +39,13 @@ function login(user) {
   };
 }
 
+const REGISTERABLE_ROLES = ["CUSTOMER", "RESTAURANT_OWNER"];
+
 async function registerUser(req) {
-  const { firstName, lastName, email, password, phoneNumber, role } = req.body;
+  const { firstName, lastName, email, password, phoneNumber } = req.body;
+  const role = REGISTERABLE_ROLES.includes(req.body.role)
+    ? req.body.role
+    : "CUSTOMER";
 
   const hashedPassword = await bcrypt.hash(password, 6);
 

@@ -7,15 +7,11 @@ const apiService = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// Add auth token and user role to requests
+// Add auth token to requests
 apiService.interceptors.request.use((config) => {
   const token = localStorage.getItem("authToken");
-  const userRole = localStorage.getItem("userRole");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-  }
-  if (userRole) {
-    config.headers["X-User-Role"] = userRole;
   }
   return config;
 });

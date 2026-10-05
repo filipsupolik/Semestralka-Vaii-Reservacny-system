@@ -2,7 +2,9 @@ const menuCategoryService = require("../services/menuCategoryService");
 
 async function getAllCategories(req, res) {
   try {
-    const categories = await menuCategoryService.getAllCategories();
+    const categories = await menuCategoryService.getCategoriesByOwner(
+      req.userId,
+    );
     res.status(200).json(categories);
   } catch (error) {
     console.error("Error fetching all categories:", error);
@@ -12,7 +14,6 @@ async function getAllCategories(req, res) {
 
 async function createMenuCategory(req, res) {
   try {
-    const { restaurantId } = req.params;
     const { name } = req.body;
 
     if (!name) {
@@ -21,7 +22,7 @@ async function createMenuCategory(req, res) {
 
     const category = await menuCategoryService.createMenuCategory({
       name,
-      restaurantId: parseInt(restaurantId),
+      ownerId: req.userId,
     });
 
     res.status(201).json(category);

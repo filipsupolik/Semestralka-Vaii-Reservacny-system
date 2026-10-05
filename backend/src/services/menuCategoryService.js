@@ -1,19 +1,28 @@
 const { prisma } = require("../../lib/prisma");
 
-async function getAllCategories() {
-  return prisma.menuCategory.findMany();
+async function getCategoriesByOwner(ownerId) {
+  return prisma.menuCategory.findMany({
+    where: { ownerId },
+  });
 }
 
-async function createMenuCategory({ name, restaurantId }) {
+async function createMenuCategory({ name, ownerId }) {
   return prisma.menuCategory.create({
     data: {
       name,
-      restaurantId,
+      ownerId,
     },
   });
 }
 
+async function getMenuCategoryById(categoryId) {
+  return prisma.menuCategory.findUnique({
+    where: { categoryId },
+  });
+}
+
 module.exports = {
-  getAllCategories,
+  getCategoriesByOwner,
   createMenuCategory,
+  getMenuCategoryById,
 };

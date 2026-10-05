@@ -5,10 +5,7 @@ const {
   searchRestaurants,
   createRestaurant,
 } = require("../controllers/restaurantController");
-const {
-  authMiddleware,
-  requireRoleMiddleware,
-} = require("../middleware/authMiddleware");
+const { authMiddleware, requireRole } = require("../middleware/authMiddleware");
 const { upload, processImage } = require("../middleware/uploadMiddleware");
 
 const restaurantRouter = Router();
@@ -18,13 +15,13 @@ restaurantRouter.get("/", searchRestaurants);
 restaurantRouter.get(
   "/owned-restaurants",
   authMiddleware,
-  requireRoleMiddleware,
+  requireRole("RESTAURANT_OWNER"),
   getMyRestaurants,
 );
 restaurantRouter.post(
   "/",
   authMiddleware,
-  requireRoleMiddleware,
+  requireRole("RESTAURANT_OWNER"),
   upload.single("image"),
   processImage,
   createRestaurant,

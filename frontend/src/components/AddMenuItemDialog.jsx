@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -13,6 +13,7 @@ import {
   FormControl,
   InputLabel,
   CircularProgress,
+  Stack,
 } from "@mui/material";
 import { useMenu } from "../context";
 
@@ -22,6 +23,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
     isLoading: isLoadingCategories,
     createMenuItem,
     updateMenuItem,
+    createCategory,
   } = useMenu();
   const [formData, setFormData] = useState({
     name: "",
@@ -29,6 +31,8 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
     price: "",
     categoryId: "",
   });
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -57,7 +61,8 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
       newErrors.description = "Description is required";
     if (!formData.price || isNaN(parseFloat(formData.price)))
       newErrors.price = "Valid price is required";
-    if (!formData.categoryId) newErrors.categoryId = "Please select a category";
+    if (!formData.categoryId || formData.categoryId === "__new__")
+      newErrors.categoryId = "Please select a category";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -87,6 +92,22 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
     }
   };
 
+  const handleCreateCategory = async () => {
+    const name = newCategoryName.trim();
+    if (!name) return;
+
+    setIsCreatingCategory(true);
+    try {
+      const created = await createCategory(name);
+      setFormData((prev) => ({ ...prev, categoryId: created.categoryId }));
+      setNewCategoryName("");
+    } catch (error) {
+      setErrors((prev) => ({ ...prev, submit: error.message }));
+    } finally {
+      setIsCreatingCategory(false);
+    }
+  };
+
   const handleClose = () => {
     setFormData({
       name: "",
@@ -94,6 +115,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
       price: "",
       categoryId: "",
     });
+    setNewCategoryName("");
     setErrors({});
     onClose();
   };
@@ -156,6 +178,9 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
                 onChange={handleInputChange}
                 label="Category"
               >
+                <MenuItem value="__new__">
+                  <em>+ New category</em>
+                </MenuItem>
                 <MenuItem value="">
                   <em>None</em>
                 </MenuItem>
@@ -165,6 +190,25 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
                   </MenuItem>
                 ))}
               </Select>
+            )}
+            {formData.categoryId === "__new__" && (
+              <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  label="New category name"
+                  value={newCategoryName}
+                  onChange={(e) => setNewCategoryName(e.target.value)}
+                  autoFocus
+                />
+                <Button
+                  variant="outlined"
+                  onClick={handleCreateCategory}
+                  disabled={!newCategoryName.trim() || isCreatingCategory}
+                >
+                  Add
+                </Button>
+              </Stack>
             )}
             {errors.categoryId && (
               <Typography color="error" variant="caption">

@@ -1,4 +1,5 @@
 const menuItemService = require("../services/menuItemService");
+const menuCategoryService = require("../services/menuCategoryService");
 
 async function getMenuItems(req, res) {
   try {
@@ -22,6 +23,30 @@ async function createMenuItem(req, res) {
       return res.status(400).json({
         message: "Name, description, price, and categoryId are required",
       });
+    }
+
+    const restaurant = await menuItemService.getRestaurantById(
+      parseInt(restaurantId),
+    );
+
+    if (!restaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+
+    if (restaurant.ownerId !== req.userId) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    const category = await menuCategoryService.getMenuCategoryById(
+      parseInt(categoryId),
+    );
+
+    if (!category) {
+      return res.status(400).json({ message: "Category not found" });
+    }
+
+    if (category.ownerId !== req.userId) {
+      return res.status(403).json({ message: "Forbidden" });
     }
 
     const menuItem = await menuItemService.createMenuItem({
@@ -59,6 +84,18 @@ async function updateMenuItem(req, res) {
     }
 
     if (existing.restaurant.ownerId !== req.userId) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+
+    const category = await menuCategoryService.getMenuCategoryById(
+      parseInt(categoryId),
+    );
+
+    if (!category) {
+      return res.status(400).json({ message: "Category not found" });
+    }
+
+    if (category.ownerId !== req.userId) {
       return res.status(403).json({ message: "Forbidden" });
     }
 

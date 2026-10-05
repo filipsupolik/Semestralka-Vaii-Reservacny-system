@@ -14,30 +14,30 @@ datasource db {
 }
 
 model User {
-  userId      Int          @id @default(autoincrement())
-  firstName   String
-  lastName    String
-  email       String       @unique
-  password    String
-  phoneNumber String
-  role        Role
-  restaurants Restaurant[]
-  orders      Order[]
+  userId         Int            @id @default(autoincrement())
+  firstName      String
+  lastName       String
+  email          String         @unique
+  password       String
+  phoneNumber    String
+  role           Role
+  restaurants    Restaurant[]
+  orders         Order[]
+  menuCategories MenuCategory[]
 }
 
 model Restaurant {
-  restaurantId   Int                  @id @default(autoincrement())
-  name           String
-  address        String
-  description    String
-  imageUrl       String?
-  createdAt      DateTime             @default(now()) @db.Timestamp(0)
-  ownerId        Int
-  owner          User                 @relation(fields: [ownerId], references: [userId])
-  menuItems      MenuItem[]
-  categories     RestaurantCategory[]
-  orders         Order[]
-  menuCategories MenuCategory[]
+  restaurantId Int                  @id @default(autoincrement())
+  name         String
+  address      String
+  description  String
+  imageUrl     String?
+  createdAt    DateTime             @default(now()) @db.Timestamp(0)
+  ownerId      Int
+  owner        User                 @relation(fields: [ownerId], references: [userId])
+  menuItems    MenuItem[]
+  categories   RestaurantCategory[]
+  orders       Order[]
 }
 
 model MenuItem {
@@ -54,11 +54,13 @@ model MenuItem {
 }
 
 model MenuCategory {
-  categoryId   Int        @id @default(autoincrement())
-  name         String
-  restaurantId Int
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [restaurantId])
-  menuItems    MenuItem[]
+  categoryId Int        @id @default(autoincrement())
+  name       String
+  ownerId    Int
+  owner      User       @relation(fields: [ownerId], references: [userId])
+  menuItems  MenuItem[]
+
+  @@index([ownerId])
 }
 
 model RestaurantCategory {
@@ -107,4 +109,5 @@ model Category {
 enum Role {
   CUSTOMER
   RESTAURANT_OWNER
+  ADMIN
 }

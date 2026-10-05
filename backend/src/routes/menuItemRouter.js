@@ -6,10 +6,7 @@ const {
   deleteMenuItem,
   getMenuCategories,
 } = require("../controllers/menuItemController");
-const {
-  authMiddleware,
-  requireRoleMiddleware,
-} = require("../middleware/authMiddleware");
+const { authMiddleware, requireRole } = require("../middleware/authMiddleware");
 
 const menuItemRouter = Router({ mergeParams: true });
 
@@ -18,21 +15,21 @@ menuItemRouter.get("/menu", getMenuItems);
 menuItemRouter.post(
   "/menu",
   authMiddleware,
-  requireRoleMiddleware,
+  requireRole("RESTAURANT_OWNER"),
   createMenuItem,
 );
 
 menuItemRouter.put(
   "/menu/:menuItemId",
   authMiddleware,
-  requireRoleMiddleware,
+  requireRole("RESTAURANT_OWNER"),
   updateMenuItem,
 );
 
 menuItemRouter.delete(
   "/menu/:menuItemId",
   authMiddleware,
-  requireRoleMiddleware,
+  requireRole("RESTAURANT_OWNER"),
   deleteMenuItem,
 );
 

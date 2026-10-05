@@ -5,19 +5,19 @@ async function login(req, res) {
     const user = await authService.findUser(req);
 
     if (!user) {
-      res.status(404).send({ message: "User not found" });
+      return res.status(404).send({ message: "User not found" });
     }
 
     const password = await authService.checkPassword(req, user);
     if (!password) {
-      res.status(401).send({ message: "Invalid password" });
+      return res.status(401).send({ message: "Invalid password" });
     }
 
     const loggedUser = authService.login(user);
     res.json({ loggedUser, message: "Login successful" });
   } catch (error) {
     console.error(error.message);
-    res.status(503);
+    res.status(503).json({ message: "Service unavailable" });
   }
 }
 
