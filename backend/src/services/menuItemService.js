@@ -14,6 +14,7 @@ async function createMenuItem({
   name,
   description,
   price,
+  imageUrl,
   categoryId,
   restaurantId,
 }) {
@@ -22,6 +23,7 @@ async function createMenuItem({
       name,
       description,
       price,
+      imageUrl,
       categoryId,
       restaurantId,
     },
@@ -36,11 +38,18 @@ async function updateMenuItem({
   name,
   description,
   price,
+  imageUrl,
   categoryId,
 }) {
   return prisma.menuItem.update({
     where: { menuItemId },
-    data: { name, description, price, categoryId },
+    data: {
+      name,
+      description,
+      price,
+      ...(imageUrl !== undefined && { imageUrl }),
+      categoryId,
+    },
     include: {
       category: true,
     },

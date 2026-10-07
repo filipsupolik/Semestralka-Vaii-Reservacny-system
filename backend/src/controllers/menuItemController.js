@@ -1,5 +1,13 @@
+const fs = require("fs");
+const path = require("path");
 const menuItemService = require("../services/menuItemService");
 const menuCategoryService = require("../services/menuCategoryService");
+
+function unlinkImage(imageUrl) {
+  if (!imageUrl) return;
+  const filepath = path.join(__dirname, "..", "..", imageUrl);
+  fs.unlink(filepath, () => {});
+}
 
 async function getMenuItems(req, res) {
   try {
@@ -29,7 +37,7 @@ async function createMenuItem(req, res) {
       parseInt(restaurantId),
     );
 
-    if (!restaurant) {
+    if (!restaurant || restaurant.deletedAt) {
       return res.status(404).json({ message: "Restaurant not found" });
     }
 
@@ -49,11 +57,16 @@ async function createMenuItem(req, res) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
+    const imageUrl = req.file
+      ? `/uploads/menu-items/${req.file.filename}`
+      : null;
+
     const menuItem = await menuItemService.createMenuItem({
       name,
       description,
       price,
-      categoryId,
+      imageUrl,
+      categoryId: parseInt(categoryId),
       restaurantId: parseInt(restaurantId),
     });
 
@@ -99,13 +112,22 @@ async function updateMenuItem(req, res) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
+    const imageUrl = req.file
+      ? `/uploads/menu-items/${req.file.filename}`
+      : undefined;
+
     const menuItem = await menuItemService.updateMenuItem({
       menuItemId: parseInt(menuItemId),
       name,
       description,
       price,
+      imageUrl,
       categoryId: parseInt(categoryId),
     });
+
+    if (req.file) {
+      unlinkImage(existing.imageUrl);
+    }
 
     res.status(200).json(menuItem);
   } catch (error) {
@@ -131,6 +153,7 @@ async function deleteMenuItem(req, res) {
     }
 
     await menuItemService.deleteMenuItem(parseInt(menuItemId));
+    unlinkImage(existing.imageUrl);
     res.status(204).send();
   } catch (error) {
     console.error("Error deleting menu item:", error);

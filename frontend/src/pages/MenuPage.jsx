@@ -6,6 +6,7 @@ import {
 import { useParams } from "react-router-dom";
 import { useCart } from "../context";
 import { useMenuItems, useMenuCategories } from "../hooks";
+import { API_BASE_URL } from "../services/api";
 
 const PLACEHOLDER_IMAGE = "https://via.placeholder.com/150";
 
@@ -53,7 +54,11 @@ function MenuPage() {
                         .map((item) => (
                           <MenuItemCard
                             key={item.menuItemId}
-                            image={item.imageUrl || PLACEHOLDER_IMAGE}
+                            image={
+                              item.imageUrl
+                                ? `${API_BASE_URL}${item.imageUrl}`
+                                : PLACEHOLDER_IMAGE
+                            }
                             name={item.name}
                             description={item.description}
                             price={item.price}

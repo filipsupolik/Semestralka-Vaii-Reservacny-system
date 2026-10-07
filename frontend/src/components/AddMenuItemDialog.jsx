@@ -16,6 +16,7 @@ import {
   Stack,
 } from "@mui/material";
 import { useMenu } from "../context";
+import { API_BASE_URL } from "../services/api";
 
 const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
   const {
@@ -30,7 +31,9 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
     description: "",
     price: "",
     categoryId: "",
+    image: null,
   });
+  const [imagePreview, setImagePreview] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
   const [errors, setErrors] = useState({});
@@ -42,7 +45,13 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
         description: menuItem.description || "",
         price: menuItem.price?.toString() || "",
         categoryId: menuItem.categoryId || "",
+        image: null,
       });
+      setImagePreview(
+        menuItem.imageUrl ? `${API_BASE_URL}${menuItem.imageUrl}` : null,
+      );
+    } else if (open) {
+      setImagePreview(null);
     }
   }, [open, menuItem]);
 
@@ -50,6 +59,33 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        setErrors((prev) => ({
+          ...prev,
+          image: "Please select an image file",
+        }));
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        setErrors((prev) => ({
+          ...prev,
+          image: "Image must be less than 5MB",
+        }));
+        return;
+      }
+      setFormData((prev) => ({ ...prev, image: file }));
+      setErrors((prev) => ({ ...prev, image: "" }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -77,6 +113,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
         description: formData.description,
         price: parseFloat(formData.price),
         categoryId,
+        image: formData.image,
       };
 
       const savedItem = menuItem
@@ -114,7 +151,9 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
       description: "",
       price: "",
       categoryId: "",
+      image: null,
     });
+    setImagePreview(null);
     setNewCategoryName("");
     setErrors({});
     onClose();
@@ -216,6 +255,41 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
               </Typography>
             )}
           </FormControl>
+
+          <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
+            Item Image (Optional)
+          </Typography>
+          <input
+            accept="image/*"
+            type="file"
+            id="menu-item-image"
+            onChange={handleImageChange}
+            style={{ display: "none" }}
+          />
+          <label htmlFor="menu-item-image">
+            <Button variant="outlined" component="span" fullWidth>
+              Choose Image
+            </Button>
+          </label>
+          {errors.image && (
+            <Typography color="error" variant="caption" sx={{ mt: 1 }}>
+              {errors.image}
+            </Typography>
+          )}
+          {imagePreview && (
+            <Box sx={{ mt: 2 }}>
+              <img
+                src={imagePreview}
+                alt="Preview"
+                style={{
+                  width: "128px",
+                  height: "128px",
+                  objectFit: "cover",
+                  borderRadius: "50%",
+                }}
+              />
+            </Box>
+          )}
         </Box>
         {errors.submit && (
           <Typography color="error" sx={{ mt: 2 }}>

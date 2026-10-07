@@ -1,7 +1,7 @@
-import React from "react";
 import RestaurantCard from "../components/RestaurantCard";
 import { useNavigate } from "react-router-dom";
 import { useTopRestaurants } from "../hooks";
+import { API_BASE_URL } from "../services/api";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const HomePage = () => {
 
   const getRestaurantImage = (restaurant) => {
     if (restaurant.imageUrl) {
-      return restaurant.imageUrl;
+      return `${API_BASE_URL}${restaurant.imageUrl}`;
     }
     return restaurant.image || "https://via.placeholder.com/300";
   };

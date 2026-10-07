@@ -71,4 +71,15 @@ const processCategoryImage = createProcessImage({
   height: 128,
 });
 
-module.exports = { upload, processImage, processCategoryImage };
+const processMenuItemImage = createProcessImage({
+  folder: "menu-items",
+  width: 256,
+  height: 256,
+});
+
+module.exports = {
+  upload,
+  processImage,
+  processCategoryImage,
+  processMenuItemImage,
+};

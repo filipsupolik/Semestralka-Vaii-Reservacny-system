@@ -46,6 +46,7 @@ model MenuItem {
   name         String
   description  String
   price        Decimal
+  imageUrl     String?
   categoryId   Int
   restaurantId Int
   restaurant   Restaurant   @relation(fields: [restaurantId], references: [restaurantId])

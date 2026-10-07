@@ -7,6 +7,10 @@ const {
   getMenuCategories,
 } = require("../controllers/menuItemController");
 const { authMiddleware, requireRole } = require("../middleware/authMiddleware");
+const {
+  upload,
+  processMenuItemImage,
+} = require("../middleware/uploadMiddleware");
 
 const menuItemRouter = Router({ mergeParams: true });
 
@@ -16,6 +20,8 @@ menuItemRouter.post(
   "/menu",
   authMiddleware,
   requireRole("RESTAURANT_OWNER"),
+  upload.single("image"),
+  processMenuItemImage,
   createMenuItem,
 );
 
@@ -23,6 +29,8 @@ menuItemRouter.put(
   "/menu/:menuItemId",
   authMiddleware,
   requireRole("RESTAURANT_OWNER"),
+  upload.single("image"),
+  processMenuItemImage,
   updateMenuItem,
 );
 
