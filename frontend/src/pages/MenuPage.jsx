@@ -61,6 +61,7 @@ function MenuPage() {
                             }
                             name={item.name}
                             description={item.description}
+                            ingredients={item.ingredients || []}
                             price={item.price}
                             onAddToCart={handleAddToCart}
                           />

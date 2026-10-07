@@ -5,6 +5,7 @@ function MenuItemCard({
   image,
   name,
   description,
+  ingredients = [],
   price,
   onAddToCart,
   onQuantityChange,
@@ -52,6 +53,11 @@ function MenuItemCard({
           <div>
             <h4 className="text-lg font-bold text-gray-800">{name}</h4>
             <p className="text-gray-600">{description}</p>
+            {ingredients.length > 0 && (
+              <p className="text-sm text-gray-500 italic">
+                {ingredients.map((ing) => ing.name).join(", ")}
+              </p>
+            )}
             <p className="text-red-500 font-bold mt-2">${price}</p>
           </div>
           <img
@@ -64,7 +70,12 @@ function MenuItemCard({
       <MenuItemDialog
         open={dialogOpen}
         onClose={handleDialogClose}
-        item={{ title: name, image, price, ingredients: [description] }}
+        item={{
+          title: name,
+          image,
+          price,
+          ingredients: ingredients.map((ing) => ing.name),
+        }}
         onAddToCart={handleAddToCart}
       />
     </div>

@@ -2,6 +2,29 @@ const fs = require("fs");
 const path = require("path");
 const menuItemService = require("../services/menuItemService");
 const menuCategoryService = require("../services/menuCategoryService");
+const ingredientService = require("../services/ingredientService");
+
+async function parseIngredientIds(raw) {
+  if (!raw) return [];
+
+  let ids;
+  try {
+    ids = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+
+  if (!Array.isArray(ids)) return null;
+
+  for (const id of ids) {
+    const ingredient = await ingredientService.getIngredientById(
+      parseInt(id, 10),
+    );
+    if (!ingredient) return null;
+  }
+
+  return ids.map((id) => parseInt(id, 10));
+}
 
 function unlinkImage(imageUrl) {
   if (!imageUrl) return;
@@ -57,6 +80,13 @@ async function createMenuItem(req, res) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
+    const ingredientIds = await parseIngredientIds(req.body.ingredients);
+    if (ingredientIds === null) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or unknown ingredients" });
+    }
+
     const imageUrl = req.file
       ? `/uploads/menu-items/${req.file.filename}`
       : null;
@@ -68,6 +98,7 @@ async function createMenuItem(req, res) {
       imageUrl,
       categoryId: parseInt(categoryId),
       restaurantId: parseInt(restaurantId),
+      ingredientIds,
     });
 
     res.status(201).json(menuItem);
@@ -112,6 +143,13 @@ async function updateMenuItem(req, res) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
+    const ingredientIds = await parseIngredientIds(req.body.ingredients);
+    if (ingredientIds === null) {
+      return res
+        .status(400)
+        .json({ message: "Invalid or unknown ingredients" });
+    }
+
     const imageUrl = req.file
       ? `/uploads/menu-items/${req.file.filename}`
       : undefined;
@@ -123,6 +161,7 @@ async function updateMenuItem(req, res) {
       price,
       imageUrl,
       categoryId: parseInt(categoryId),
+      ingredientIds,
     });
 
     if (req.file) {

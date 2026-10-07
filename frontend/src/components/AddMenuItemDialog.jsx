@@ -21,21 +21,26 @@ import { API_BASE_URL } from "../services/api";
 const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
   const {
     categories,
+    ingredients,
     isLoading: isLoadingCategories,
     createMenuItem,
     updateMenuItem,
     createCategory,
+    createIngredient,
   } = useMenu();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: "",
     categoryId: "",
+    ingredientIds: [],
     image: null,
   });
   const [imagePreview, setImagePreview] = useState(null);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [newIngredientName, setNewIngredientName] = useState("");
   const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+  const [isCreatingIngredient, setIsCreatingIngredient] = useState(false);
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
@@ -45,6 +50,9 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
         description: menuItem.description || "",
         price: menuItem.price?.toString() || "",
         categoryId: menuItem.categoryId || "",
+        ingredientIds: (menuItem.ingredients || []).map(
+          (ing) => ing.ingredientId,
+        ),
         image: null,
       });
       setImagePreview(
@@ -59,6 +67,11 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
+  };
+
+  const handleIngredientsChange = (e) => {
+    setFormData((prev) => ({ ...prev, ingredientIds: e.target.value }));
+    setErrors((prev) => ({ ...prev, ingredients: "" }));
   };
 
   const handleImageChange = (e) => {
@@ -113,6 +126,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
         description: formData.description,
         price: parseFloat(formData.price),
         categoryId,
+        ingredientIds: formData.ingredientIds,
         image: formData.image,
       };
 
@@ -145,16 +159,45 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
     }
   };
 
+  const handleCreateIngredient = async () => {
+    const name = newIngredientName.trim();
+    if (!name) return;
+
+    if (ingredients.some((ing) => ing.name === name.toLowerCase())) {
+      setErrors((prev) => ({
+        ...prev,
+        ingredients: "Ingredient already exists",
+      }));
+      return;
+    }
+
+    setIsCreatingIngredient(true);
+    try {
+      const created = await createIngredient(name);
+      setFormData((prev) => ({
+        ...prev,
+        ingredientIds: [...prev.ingredientIds, created.ingredientId],
+      }));
+      setNewIngredientName("");
+    } catch (error) {
+      setErrors((prev) => ({ ...prev, ingredients: error.message }));
+    } finally {
+      setIsCreatingIngredient(false);
+    }
+  };
+
   const handleClose = () => {
     setFormData({
       name: "",
       description: "",
       price: "",
       categoryId: "",
+      ingredientIds: [],
       image: null,
     });
     setImagePreview(null);
     setNewCategoryName("");
+    setNewIngredientName("");
     setErrors({});
     onClose();
   };
@@ -252,6 +295,50 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
             {errors.categoryId && (
               <Typography color="error" variant="caption">
                 {errors.categoryId}
+              </Typography>
+            )}
+          </FormControl>
+
+          <FormControl fullWidth margin="normal" error={!!errors.ingredients}>
+            <InputLabel>Ingredients</InputLabel>
+            <Select
+              multiple
+              name="ingredientIds"
+              value={formData.ingredientIds}
+              onChange={handleIngredientsChange}
+              label="Ingredients"
+              renderValue={(selected) =>
+                ingredients
+                  .filter((ing) => selected.includes(ing.ingredientId))
+                  .map((ing) => ing.name)
+                  .join(", ")
+              }
+            >
+              {ingredients.map((ing) => (
+                <MenuItem key={ing.ingredientId} value={ing.ingredientId}>
+                  {ing.name}
+                </MenuItem>
+              ))}
+            </Select>
+            <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+              <TextField
+                fullWidth
+                size="small"
+                label="New ingredient name"
+                value={newIngredientName}
+                onChange={(e) => setNewIngredientName(e.target.value)}
+              />
+              <Button
+                variant="outlined"
+                onClick={handleCreateIngredient}
+                disabled={!newIngredientName.trim() || isCreatingIngredient}
+              >
+                Add
+              </Button>
+            </Stack>
+            {errors.ingredients && (
+              <Typography color="error" variant="caption">
+                {errors.ingredients}
               </Typography>
             )}
           </FormControl>

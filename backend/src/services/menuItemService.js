@@ -17,6 +17,7 @@ async function createMenuItem({
   imageUrl,
   categoryId,
   restaurantId,
+  ingredientIds,
 }) {
   return prisma.menuItem.create({
     data: {
@@ -26,9 +27,13 @@ async function createMenuItem({
       imageUrl,
       categoryId,
       restaurantId,
+      ingredients: {
+        connect: (ingredientIds || []).map((id) => ({ ingredientId: id })),
+      },
     },
     include: {
       category: true,
+      ingredients: true,
     },
   });
 }
@@ -40,6 +45,7 @@ async function updateMenuItem({
   price,
   imageUrl,
   categoryId,
+  ingredientIds,
 }) {
   return prisma.menuItem.update({
     where: { menuItemId },
@@ -49,9 +55,13 @@ async function updateMenuItem({
       price,
       ...(imageUrl !== undefined && { imageUrl }),
       categoryId,
+      ingredients: {
+        set: (ingredientIds || []).map((id) => ({ ingredientId: id })),
+      },
     },
     include: {
       category: true,
+      ingredients: true,
     },
   });
 }

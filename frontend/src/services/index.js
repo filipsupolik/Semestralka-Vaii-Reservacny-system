@@ -4,3 +4,4 @@ export { menuService } from "./menuService";
 export { menuCategoryService } from "./menuCategoryService";
 export { authService } from "./authService";
 export { categoryService } from "./categoryService";
+export { ingredientService } from "./ingredientService";

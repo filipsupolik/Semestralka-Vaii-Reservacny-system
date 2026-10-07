@@ -5,7 +5,11 @@ import {
   useEffect,
   useState,
 } from "react";
-import { menuService, menuCategoryService } from "../services";
+import {
+  menuService,
+  menuCategoryService,
+  ingredientService,
+} from "../services";
 import { useDashboard } from "./DashboardContext";
 
 const MenuContext = createContext(null);
@@ -14,6 +18,7 @@ export const MenuProvider = ({ children }) => {
   const { selectedProject } = useDashboard();
   const [menuItems, setMenuItems] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [ingredients, setIngredients] = useState([]);
   const [selectedMenuItem, setSelectedMenuItem] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -22,22 +27,26 @@ export const MenuProvider = ({ children }) => {
     if (!selectedProject) {
       setMenuItems([]);
       setCategories([]);
+      setIngredients([]);
       return;
     }
 
     setIsLoading(true);
     setError(null);
     try {
-      const [items, menuCategories] = await Promise.all([
+      const [items, menuCategories, allIngredients] = await Promise.all([
         menuService.getMenuItems(selectedProject),
         menuService.getMenuCategories(selectedProject),
+        ingredientService.getAllIngredients(),
       ]);
       setMenuItems(items);
       setCategories(menuCategories);
+      setIngredients(allIngredients);
     } catch (err) {
       setError(err.message);
       setMenuItems([]);
       setCategories([]);
+      setIngredients([]);
     } finally {
       setIsLoading(false);
     }
@@ -89,9 +98,17 @@ export const MenuProvider = ({ children }) => {
     return createdCategory;
   };
 
+  const createIngredient = async (name) => {
+    ensureRestaurantSelected();
+    const createdIngredient = await ingredientService.createIngredient(name);
+    await refreshMenu();
+    return createdIngredient;
+  };
+
   const value = {
     menuItems,
     categories,
+    ingredients,
     selectedMenuItem,
     setSelectedMenuItem,
     isLoading,
@@ -101,6 +118,7 @@ export const MenuProvider = ({ children }) => {
     updateMenuItem,
     deleteMenuItem,
     createCategory,
+    createIngredient,
   };
 
   return <MenuContext.Provider value={value}>{children}</MenuContext.Provider>;

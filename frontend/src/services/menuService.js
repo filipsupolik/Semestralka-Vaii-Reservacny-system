@@ -5,6 +5,7 @@ function buildMenuItemFormData({
   description,
   price,
   categoryId,
+  ingredientIds,
   image,
 }) {
   const formData = new FormData();
@@ -12,6 +13,7 @@ function buildMenuItemFormData({
   formData.append("description", description);
   formData.append("price", price);
   formData.append("categoryId", categoryId);
+  formData.append("ingredients", JSON.stringify(ingredientIds ?? []));
   if (image) {
     formData.append("image", image);
   }

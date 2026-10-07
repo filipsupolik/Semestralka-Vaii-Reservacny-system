@@ -97,9 +97,9 @@ model OrderItem {
 }
 
 model Ingredient {
-  id        Int        @id @default(autoincrement())
-  name      String
-  menuItems MenuItem[]
+  ingredientId Int        @id @default(autoincrement())
+  name         String     @unique
+  menuItems    MenuItem[]
 }
 
 model Category {
