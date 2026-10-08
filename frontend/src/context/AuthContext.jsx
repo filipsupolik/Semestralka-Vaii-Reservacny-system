@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { authService } from "../services";
 
 const AuthContext = createContext(null);
@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // Check if user is already authenticated on mount
-    if (authService.isAuthenticated()) {
+    if (authService.validateSession()) {
       setUser({
         role: authService.getUserRole(),
         email: authService.getUserEmail(),

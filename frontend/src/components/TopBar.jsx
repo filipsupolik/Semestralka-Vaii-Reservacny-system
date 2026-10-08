@@ -1,11 +1,12 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { Link, useNavigate } from "react-router-dom";
-import { FaUtensils, FaPhone, FaUser } from "react-icons/fa";
+import { FaUtensils, FaPhone, FaUser, FaHome } from "react-icons/fa";
 
 function TopBar({
   title,
   showBack,
+  showHome,
   showNavigation,
   onOpenDialog,
   isLoggedIn,
@@ -33,6 +34,17 @@ function TopBar({
                 onClick={() => navigate(-1)}
               >
                 ←
+              </button>
+            </div>
+          )}
+          {showHome && (
+            <div className="flex items-center">
+              <button
+                className="text-red-500 text-2xl font-bold mr-4"
+                onClick={() => navigate("/")}
+                aria-label="Home"
+              >
+                <FaHome />
               </button>
             </div>
           )}
@@ -130,6 +142,7 @@ function TopBar({
 TopBar.propTypes = {
   title: PropTypes.string.isRequired,
   showBack: PropTypes.bool.isRequired,
+  showHome: PropTypes.bool,
   showNavigation: PropTypes.bool.isRequired,
   onOpenDialog: PropTypes.func.isRequired,
   isLoggedIn: PropTypes.bool.isRequired,

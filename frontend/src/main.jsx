@@ -72,6 +72,7 @@ const router = createBrowserRouter([
         handle: {
           title: "Owner Dashboard",
           showBack: true,
+          showHome: true,
           showNavigation: false,
         },
       },

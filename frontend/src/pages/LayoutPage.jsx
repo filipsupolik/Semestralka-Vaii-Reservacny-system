@@ -7,7 +7,7 @@ import {
   CreateRestaurantDialog,
 } from "../components/index";
 import { useAuth, useDashboard } from "../context";
-import { restaurantService } from "../services";
+import { authService, restaurantService } from "../services";
 
 function LayoutPage() {
   const matches = useMatches();
@@ -40,6 +40,7 @@ function LayoutPage() {
         localStorage.setItem("authToken", loggedUser.token);
         localStorage.setItem("userRole", loggedUser.user.role);
         localStorage.setItem("userEmail", loggedUser.user.email);
+        authService.startSession();
 
         // Update auth state
         setUser({
