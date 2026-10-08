@@ -10,6 +10,7 @@ const categoryRouter = require("./src/routes/categoryRouter");
 const menuItemRouter = require("./src/routes/menuItemRouter");
 const menuCategoryRouter = require("./src/routes/menuCategoryRouter");
 const ingredientRouter = require("./src/routes/ingredientRouter");
+const orderRouter = require("./src/routes/orderRouter");
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/auth", authRouter);
 app.use("/restaurant", restaurantRouter);
 app.use("/restaurant/:restaurantId", menuItemRouter);
+app.use("/restaurant/:restaurantId", orderRouter);
 app.use("/category", categoryRouter);
 app.use("/menu-categories", menuCategoryRouter);
 app.use("/ingredients", ingredientRouter);

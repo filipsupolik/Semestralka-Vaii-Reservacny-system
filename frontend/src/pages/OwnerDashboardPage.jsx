@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { useDashboard, useMenu } from "../context";
 import { useMyRestaurants } from "../hooks/useRestaurants";
+import { useOrders } from "../hooks/useOrders";
 import AddMenuItemDialog from "../components/AddMenuItemDialog";
+
+const ORDER_STATUSES = ["PENDING", "PREPARING", "COMPLETED", "CANCELLED"];
 
 function OwnerDashboardPage() {
   const { selectedProject, toggleProject } = useDashboard();
@@ -16,6 +19,12 @@ function OwnerDashboardPage() {
   } = useMenu();
   const [isMenuDialogOpen, setIsMenuDialogOpen] = useState(false);
   const [editingMenuItem, setEditingMenuItem] = useState(null);
+  const {
+    orders,
+    isLoading: ordersLoading,
+    error: ordersError,
+    updateOrderStatus,
+  } = useOrders(selectedProject);
 
   const selectedRestaurant = restaurants.find(
     (restaurant) => restaurant.restaurantId === selectedProject,
@@ -47,6 +56,14 @@ function OwnerDashboardPage() {
     setSelectedMenuItem(null);
   };
 
+  const handleStatusChange = async (orderId, status) => {
+    try {
+      await updateOrderStatus(orderId, status);
+    } catch (error) {
+      console.error("Failed to update order status:", error);
+    }
+  };
+
   const actionButtonClass =
     "cursor-pointer rounded-[25px] border-0 bg-[#00b7ff] px-[15px] py-[10px] text-base font-extrabold text-white disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-60";
 
@@ -54,8 +71,8 @@ function OwnerDashboardPage() {
     <main className="h-screen w-full overflow-hidden">
       <section className="h-full w-full">
         <div className="flex flex-col h-full w-full min-w-0">
-          <div className="col-start-2 row-start-2 grid min-h-0 min-w-0 grid-cols-[minmax(0,70%)_minmax(0,1fr)] grid-rows-2 gap-[25px] overflow-hidden bg-[#e6e6e6] p-[25px]">
-            <div className="row-span-2 min-w-0">
+          <div className="col-start-2 row-start-2 grid min-h-0 min-w-0 grid-cols-[minmax(0,70%)_minmax(0,1fr)] grid-rows-3 gap-[25px] overflow-hidden bg-[#e6e6e6] p-[25px]">
+            <div className="row-span-3 min-w-0">
               <h3>Your restaurants</h3>
               <div className="grid grid-cols-2 auto-rows-fr gap-[15px]">
                 {restaurants.map((restaurant) => (
@@ -85,6 +102,75 @@ function OwnerDashboardPage() {
                     />
                   </div>
                 ))}
+              </div>
+            </div>
+            <div className="flex min-h-0 flex-col">
+              <h3 className="shrink-0">Orders</h3>
+              <div className="min-h-0 flex-1 overflow-y-auto rounded-[10px] bg-white p-[25px]">
+                {!selectedProject ? (
+                  <p className="text-[#615f5f]">
+                    Select a restaurant to view its orders
+                  </p>
+                ) : ordersLoading ? (
+                  <p className="text-[#615f5f]">Loading orders...</p>
+                ) : ordersError ? (
+                  <p className="text-red-500">{ordersError}</p>
+                ) : orders.length === 0 ? (
+                  <p className="text-[#615f5f]">
+                    This restaurant has no orders
+                  </p>
+                ) : (
+                  orders.map((order) => (
+                    <div
+                      key={order.orderId}
+                      className="rounded-[8px] border-b-2 border-[#b8b8b8] px-[10px] py-[15px] last:border-b-0"
+                    >
+                      <div className="flex justify-between items-center">
+                        <h4>Order #{order.orderId}</h4>
+                        <select
+                          className="cursor-pointer rounded-[8px] border border-gray-300 bg-white px-2 py-1 text-sm"
+                          value={order.status}
+                          onChange={(e) =>
+                            handleStatusChange(order.orderId, e.target.value)
+                          }
+                        >
+                          {[...new Set([order.status, ...ORDER_STATUSES])].map(
+                            (status) => (
+                              <option key={status} value={status}>
+                                {status}
+                              </option>
+                            ),
+                          )}
+                        </select>
+                      </div>
+                      <p className="text-[#615f5f]">
+                        {order.customer.firstName} {order.customer.lastName} (
+                        {order.customer.email})
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {new Date(order.createdAt).toLocaleString()}
+                      </p>
+                      <ul className="mt-1">
+                        {order.orderItems.map((item) => (
+                          <li
+                            key={item.orderItemId}
+                            className="flex justify-between text-sm"
+                          >
+                            <span>
+                              {item.menuItem.name} × {item.quantity}
+                            </span>
+                            <span>
+                              €{Number(item.price_at_order_time).toFixed(2)}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                      <p className="mt-1 text-right font-bold text-red-500">
+                        €{Number(order.totalPrice).toFixed(2)}
+                      </p>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
             <div className="flex min-h-0 flex-col">
