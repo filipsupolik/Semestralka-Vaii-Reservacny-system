@@ -63,25 +63,27 @@ const RestaurantPage = () => {
 
   return (
     <div>
-      <section className="py-16">
+      <section className="py-8 sm:py-16">
         <div className="container mx-auto px-4 py-4">
           <SearchBar title={"Vyhladaj restauraciu"} onSearch={handleSearch} />
-          <div className="flex flex-row gap-4 flex-wrap">
-            {categories.map((category) => (
-              <CategoryCard
-                key={category.categoryId}
-                image={
-                  category.imageUrl
-                    ? `${API_BASE_URL}${category.imageUrl}`
-                    : undefined
-                }
-                title={category.name}
-                selected={selectedCategory === category.name}
-                onClick={() => handleCategoryFilter(category.name)}
-              />
-            ))}
+          <div className="flex items-center gap-4">
+            <div className="flex h-[120px] flex-1 min-w-0 flex-row flex-wrap content-start gap-4 overflow-hidden">
+              {categories.map((category) => (
+                <CategoryCard
+                  key={category.categoryId}
+                  image={
+                    category.imageUrl
+                      ? `${API_BASE_URL}${category.imageUrl}`
+                      : undefined
+                  }
+                  title={category.name}
+                  selected={selectedCategory === category.name}
+                  onClick={() => handleCategoryFilter(category.name)}
+                />
+              ))}
+            </div>
             <button
-              className="p-3 rounded-lg border-2 border-stone-800 "
+              className="shrink-0 self-start p-3 rounded-lg border-2 border-stone-800"
               onClick={handleOpenShowAllDialog}
             >
               Show All
@@ -96,7 +98,7 @@ const RestaurantPage = () => {
               No restaurants found.
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-5">
               {restaurants.map((restaurant) => (
                 <RestaurantCard
                   key={restaurant.restaurantId || restaurant.id}
@@ -109,7 +111,7 @@ const RestaurantPage = () => {
             </div>
           )}
           {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-8">
+            <div className="flex flex-wrap justify-center items-center gap-2 mt-8">
               <button
                 className="cursor-pointer rounded-lg border border-stone-800 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40"
                 disabled={page <= 1}
@@ -148,6 +150,8 @@ const RestaurantPage = () => {
         isOpen={dialogOpen}
         handleClose={handleCloseDialog}
         categories={categories}
+        selectedCategory={selectedCategory}
+        onSelect={handleCategoryFilter}
       />
     </div>
   );

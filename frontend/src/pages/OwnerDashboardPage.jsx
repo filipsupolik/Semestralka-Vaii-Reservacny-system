@@ -68,13 +68,13 @@ function OwnerDashboardPage() {
     "cursor-pointer rounded-[25px] border-0 bg-[#00b7ff] px-[15px] py-[10px] text-base font-extrabold text-white disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-60";
 
   return (
-    <main className="h-screen w-full overflow-hidden">
+    <main className="min-h-screen w-full min-[1040px]:h-screen min-[1040px]:overflow-hidden">
       <section className="h-full w-full">
         <div className="flex flex-col h-full w-full min-w-0">
-          <div className="col-start-2 row-start-2 grid min-h-0 min-w-0 grid-cols-[minmax(0,70%)_minmax(0,1fr)] grid-rows-3 gap-[25px] overflow-hidden bg-[#e6e6e6] p-[25px]">
-            <div className="row-span-3 min-w-0">
+          <div className="col-start-2 row-start-2 grid min-[1040px]:min-h-0 min-w-0 grid-cols-1 min-[1040px]:grid-cols-[minmax(0,70%)_minmax(0,1fr)] min-[1040px]:grid-rows-3 gap-[25px] min-[1040px]:overflow-hidden bg-[#e6e6e6] p-[25px]">
+            <div className="min-[1040px]:row-span-3 min-w-0">
               <h3>Your restaurants</h3>
-              <div className="grid grid-cols-2 auto-rows-fr gap-[15px]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 auto-rows-fr gap-[15px]">
                 {restaurants.map((restaurant) => (
                   <div
                     key={restaurant.restaurantId}
@@ -98,15 +98,15 @@ function OwnerDashboardPage() {
                           : ""
                       }
                       alt={restaurant.name}
-                      className="w-full h-40 object-cover rounded"
+                      className="w-full h-32 sm:h-40 object-cover rounded"
                     />
                   </div>
                 ))}
               </div>
             </div>
-            <div className="flex min-h-0 flex-col">
+            <div className="flex min-[1040px]:min-h-0 flex-col">
               <h3 className="shrink-0">Orders</h3>
-              <div className="min-h-0 flex-1 overflow-y-auto rounded-[10px] bg-white p-[25px]">
+              <div className="min-[1040px]:min-h-0 min-[1040px]:flex-1 overflow-y-auto rounded-[10px] bg-white p-[25px]">
                 {!selectedProject ? (
                   <p className="text-[#615f5f]">
                     Select a restaurant to view its orders
@@ -128,7 +128,7 @@ function OwnerDashboardPage() {
                       <div className="flex justify-between items-center">
                         <h4>Order #{order.orderId}</h4>
                         <select
-                          className="cursor-pointer rounded-[8px] border border-gray-300 bg-white px-2 py-1 text-sm"
+                          className="hidden min-[1040px]:block cursor-pointer rounded-[8px] border border-gray-300 bg-white px-2 py-1 text-sm"
                           value={order.status}
                           onChange={(e) =>
                             handleStatusChange(order.orderId, e.target.value)
@@ -150,6 +150,21 @@ function OwnerDashboardPage() {
                       <p className="text-sm text-gray-500">
                         {new Date(order.createdAt).toLocaleString()}
                       </p>
+                      <select
+                        className="min-[1040px]:hidden mt-1 cursor-pointer rounded-[8px] border border-gray-300 bg-white px-2 py-1 text-sm"
+                        value={order.status}
+                        onChange={(e) =>
+                          handleStatusChange(order.orderId, e.target.value)
+                        }
+                      >
+                        {[...new Set([order.status, ...ORDER_STATUSES])].map(
+                          (status) => (
+                            <option key={status} value={status}>
+                              {status}
+                            </option>
+                          ),
+                        )}
+                      </select>
                       <ul className="mt-1">
                         {order.orderItems.map((item) => (
                           <li
@@ -173,9 +188,9 @@ function OwnerDashboardPage() {
                 )}
               </div>
             </div>
-            <div className="flex min-h-0 flex-col">
+            <div className="flex min-[1040px]:min-h-0 flex-col">
               <h3 className="shrink-0">Menu</h3>
-              <div className="min-h-0 flex-1 overflow-y-auto rounded-[10px] bg-white p-[25px]">
+              <div className="min-[1040px]:min-h-0 min-[1040px]:flex-1 overflow-y-auto rounded-[10px] bg-white p-[25px]">
                 {!selectedProject ? (
                   <p className="text-[#615f5f]">
                     Select a restaurant to view its menu
@@ -218,7 +233,7 @@ function OwnerDashboardPage() {
                 )}
               </div>
             </div>
-            <div className="flex min-h-0 flex-col justify-center gap-[15px]">
+            <div className="flex min-[1040px]:min-h-0 flex-col justify-center gap-[15px]">
               <button
                 className={actionButtonClass}
                 onClick={handleAddClick}

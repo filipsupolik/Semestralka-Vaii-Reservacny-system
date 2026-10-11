@@ -24,9 +24,9 @@ const HomePage = () => {
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Hero Section */}
-      <section className="bg-red-500 text-white py-20">
+      <section className="bg-red-500 text-white py-12 sm:py-20">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-4">
+          <h2 className="text-2xl sm:text-4xl font-bold mb-4">
             Delicious Food Delivered to Your Doorstep
           </h2>
           <p className="text-lg mb-6">
@@ -52,7 +52,7 @@ const HomePage = () => {
               Loading restaurants...
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {restaurants.map((restaurant) => (
                 <RestaurantCard
                   key={restaurant.restaurantId || restaurant.id}

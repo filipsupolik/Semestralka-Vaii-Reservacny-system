@@ -1,6 +1,6 @@
 function CategoryCard({ title, image, selected, onClick }) {
   return (
-    <div onClick={onClick} className="cursor-pointer">
+    <div onClick={onClick} className="shrink-0 cursor-pointer">
       <div
         className={`bg-amber-500 p-3 rounded-lg ${selected ? "ring-4 ring-[#00b7ff]" : ""}`}
       >
@@ -10,7 +10,9 @@ function CategoryCard({ title, image, selected, onClick }) {
           <div className="h-16 w-16" />
         )}
       </div>
-      <h2 className="text-base text-gray-800 mt-2 text-center">{title}</h2>
+      <h2 className="text-base text-gray-800 mt-2 text-center whitespace-nowrap">
+        {title}
+      </h2>
     </div>
   );
 }

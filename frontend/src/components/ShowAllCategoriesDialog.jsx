@@ -1,21 +1,33 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Grid,
   Button,
-  Typography,
 } from "@mui/material";
 import SearchBar from "./SearchBar";
+import CategoryCard from "./CategoryCard";
+import { API_BASE_URL } from "../services/api";
 
-function ShowAllCategoriesDialog({ isOpen, handleClose, categories }) {
+function ShowAllCategoriesDialog({
+  isOpen,
+  handleClose,
+  categories,
+  selectedCategory,
+  onSelect,
+}) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearchChange = (value) => {
     setSearchTerm(value.toLowerCase());
+  };
+
+  const handleSelect = (categoryName) => {
+    onSelect(categoryName);
+    handleClose();
   };
 
   const filteredCategories = categories
@@ -32,8 +44,17 @@ function ShowAllCategoriesDialog({ isOpen, handleClose, categories }) {
         />
         <Grid container spacing={4}>
           {filteredCategories.map((category) => (
-            <Grid item xs={12} sm={4} key={category.categoryId ?? category.id}>
-              <Typography>{category.name}</Typography>
+            <Grid item xs={4} sm={3} key={category.categoryId ?? category.id}>
+              <CategoryCard
+                image={
+                  category.imageUrl
+                    ? `${API_BASE_URL}${category.imageUrl}`
+                    : undefined
+                }
+                title={category.name}
+                selected={selectedCategory === category.name}
+                onClick={() => handleSelect(category.name)}
+              />
             </Grid>
           ))}
         </Grid>
@@ -46,5 +67,13 @@ function ShowAllCategoriesDialog({ isOpen, handleClose, categories }) {
     </Dialog>
   );
 }
+
+ShowAllCategoriesDialog.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  handleClose: PropTypes.func.isRequired,
+  categories: PropTypes.array.isRequired,
+  selectedCategory: PropTypes.string,
+  onSelect: PropTypes.func.isRequired,
+};
 
 export default ShowAllCategoriesDialog;

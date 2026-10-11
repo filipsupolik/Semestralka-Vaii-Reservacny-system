@@ -1,5 +1,6 @@
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
 const sharp = require("sharp");
 
 const storage = multer.memoryStorage();
@@ -39,7 +40,9 @@ const createProcessImage = ({ folder, width, height }) => {
         .slice(0, 10);
       const randomSuffix = Math.random().toString(36).substring(2, 8);
       const filename = `${timestamp}-${randomSuffix}${path.extname(req.file.originalname)}`;
-      const filepath = `uploads/${folder}/${filename}`;
+      const uploadDir = path.join(__dirname, "..", "..", "uploads", folder);
+      fs.mkdirSync(uploadDir, { recursive: true });
+      const filepath = path.join(uploadDir, filename);
 
       await sharp(req.file.buffer)
         .resize(width, height, {

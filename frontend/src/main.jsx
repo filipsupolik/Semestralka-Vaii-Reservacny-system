@@ -27,7 +27,6 @@ const router = createBrowserRouter([
         handle: {
           title: "Food Delivery",
           showBack: false,
-          showNavigation: true,
         },
       },
       {
@@ -36,7 +35,6 @@ const router = createBrowserRouter([
         handle: {
           title: "Restaurants",
           showBack: true,
-          showNavigation: false,
         },
       },
       {
@@ -45,7 +43,6 @@ const router = createBrowserRouter([
         handle: {
           title: "Menu",
           showBack: true,
-          showNavigation: false,
         },
       },
       {
@@ -54,7 +51,6 @@ const router = createBrowserRouter([
         handle: {
           title: "Checkout",
           showBack: true,
-          showNavigation: false,
         },
       },
       {
@@ -63,7 +59,6 @@ const router = createBrowserRouter([
         handle: {
           title: "Profile",
           showBack: true,
-          showNavigation: false,
         },
       },
       {
@@ -73,7 +68,6 @@ const router = createBrowserRouter([
           title: "Owner Dashboard",
           showBack: true,
           showHome: true,
-          showNavigation: false,
         },
       },
     ],

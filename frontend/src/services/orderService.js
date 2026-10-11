@@ -1,6 +1,10 @@
 import { apiService } from "./api";
 
 export const orderService = {
+  async createOrder(restaurantId, items) {
+    return apiService.post(`/restaurant/${restaurantId}/orders`, { items });
+  },
+
   async getOrders(restaurantId) {
     return apiService.get(`/restaurant/${restaurantId}/orders`);
   },

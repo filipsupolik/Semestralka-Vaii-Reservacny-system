@@ -26,9 +26,9 @@ function MenuPage() {
 
   return (
     <div className="bg-gray-100 min-h-screen">
-      <div className="flex flex-row gap-4">
+      <div className="flex flex-col lg:flex-row gap-4 pb-20 lg:pb-0">
         {/* Menu Section */}
-        <section className="w-3/4 py-16">
+        <section className="w-full lg:w-3/4 py-8 sm:py-16">
           <div className="container mx-auto px-4">
             <h2 className="text-3xl font-bold text-gray-800 mb-6">Menu</h2>
             {categoriesLoading || menuLoading ? (
@@ -54,6 +54,7 @@ function MenuPage() {
                         .map((item) => (
                           <MenuItemCard
                             key={item.menuItemId}
+                            menuItemId={item.menuItemId}
                             image={
                               item.imageUrl
                                 ? `${API_BASE_URL}${item.imageUrl}`
@@ -74,7 +75,7 @@ function MenuPage() {
           </div>
         </section>
         {/* Shopping Cart Section */}
-        <ShoppingCard cart={cart} />
+        <ShoppingCard cart={cart} restaurantId={id} />
       </div>
     </div>
   );

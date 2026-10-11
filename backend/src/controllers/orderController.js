@@ -3,6 +3,50 @@ const restaurantService = require("../services/restaurantService");
 
 const ORDER_STATUSES = ["PENDING", "PREPARING", "COMPLETED", "CANCELLED"];
 
+async function createOrder(req, res) {
+  try {
+    const { restaurantId } = req.params;
+    const { items } = req.body;
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: "Order items are required" });
+    }
+
+    for (const item of items) {
+      if (
+        !Number.isInteger(item.menuItemId) ||
+        !Number.isInteger(item.quantity) ||
+        item.quantity <= 0
+      ) {
+        return res.status(400).json({ message: "Invalid order items" });
+      }
+    }
+
+    const restaurant = await restaurantService.getRestaurantById(
+      parseInt(restaurantId),
+    );
+
+    if (!restaurant || restaurant.deletedAt) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+
+    const order = await orderService.createOrder({
+      customerId: req.userId,
+      restaurantId: parseInt(restaurantId),
+      items,
+    });
+
+    if (!order) {
+      return res.status(400).json({ message: "Invalid menu items" });
+    }
+
+    res.status(201).json(order);
+  } catch (error) {
+    console.error("Error creating order:", error);
+    res.status(500).json({ message: "Failed to create order" });
+  }
+}
+
 async function getOrders(req, res) {
   try {
     const { restaurantId } = req.params;
@@ -59,6 +103,7 @@ async function updateOrderStatus(req, res) {
 }
 
 module.exports = {
+  createOrder,
   getOrders,
   updateOrderStatus,
 };

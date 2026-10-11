@@ -1,11 +1,14 @@
 const { Router } = require("express");
 const {
+  createOrder,
   getOrders,
   updateOrderStatus,
 } = require("../controllers/orderController");
 const { authMiddleware, requireRole } = require("../middleware/authMiddleware");
 
 const orderRouter = Router({ mergeParams: true });
+
+orderRouter.post("/orders", authMiddleware, createOrder);
 
 orderRouter.get(
   "/orders",

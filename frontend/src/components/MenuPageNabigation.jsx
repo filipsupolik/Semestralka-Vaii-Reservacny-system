@@ -20,8 +20,8 @@ function MenuPageNavigation({ menuCategories }) {
   );
 
   return (
-    <div className="max-w-80 m-4">
-      <div className="flex flex-row gap-4 mb-8 items-center">
+    <div className="max-w-80 sm:max-w-full m-4">
+      <div className="flex flex-row gap-4 mb-8 items-center overflow-x-auto">
         {startIndex > 0 && (
           <button
             onClick={handleScrollLeft}

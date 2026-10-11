@@ -1,13 +1,12 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { Link, useNavigate } from "react-router-dom";
-import { FaUtensils, FaPhone, FaUser, FaHome } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { FaUser, FaHome } from "react-icons/fa";
 
 function TopBar({
   title,
   showBack,
   showHome,
-  showNavigation,
   onOpenDialog,
   isLoggedIn,
   userRole,
@@ -26,7 +25,7 @@ function TopBar({
   return (
     <div>
       <header className="bg-white shadow-md">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+        <div className="container mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-y-2">
           {showBack && (
             <div className="flex items-center">
               <button
@@ -48,31 +47,9 @@ function TopBar({
               </button>
             </div>
           )}
-          <h1 className="text-2xl font-bold text-red-500">{title}</h1>
-          {showNavigation && (
-            <nav>
-              <ul className="flex space-x-4">
-                <li className="flex items-center">
-                  <FaUtensils className="mr-2" />
-                  <Link
-                    to="/restaurant"
-                    className="text-gray-700 hover:text-red-500"
-                  >
-                    Order
-                  </Link>
-                </li>
-                <li className="flex items-center">
-                  <FaPhone className="mr-2" />
-                  <Link
-                    to="/contact"
-                    className="text-gray-700 hover:text-red-500"
-                  >
-                    Contact
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          )}
+          <h1 className="text-xl sm:text-2xl font-bold text-red-500">
+            {title}
+          </h1>
           <div className="flex items-center gap-4">
             {actionButtons}
             {!isLoggedIn ? (
@@ -143,7 +120,6 @@ TopBar.propTypes = {
   title: PropTypes.string.isRequired,
   showBack: PropTypes.bool.isRequired,
   showHome: PropTypes.bool,
-  showNavigation: PropTypes.bool.isRequired,
   onOpenDialog: PropTypes.func.isRequired,
   isLoggedIn: PropTypes.bool.isRequired,
   userRole: PropTypes.string,
