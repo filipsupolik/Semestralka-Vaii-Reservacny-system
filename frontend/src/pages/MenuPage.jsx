@@ -6,7 +6,7 @@ import {
 import { useParams } from "react-router-dom";
 import { useCart } from "../context";
 import { useMenuItems, useMenuCategories } from "../hooks";
-import { API_BASE_URL } from "../services/api";
+import { getImageUrl } from "../services/api";
 
 const PLACEHOLDER_IMAGE = "https://via.placeholder.com/150";
 
@@ -56,9 +56,7 @@ function MenuPage() {
                             key={item.menuItemId}
                             menuItemId={item.menuItemId}
                             image={
-                              item.imageUrl
-                                ? `${API_BASE_URL}${item.imageUrl}`
-                                : PLACEHOLDER_IMAGE
+                              getImageUrl(item.imageUrl) ?? PLACEHOLDER_IMAGE
                             }
                             name={item.name}
                             description={item.description}

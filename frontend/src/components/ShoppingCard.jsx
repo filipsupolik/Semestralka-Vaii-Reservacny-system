@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context";
+import CartItemRow from "./CartItemRow";
 
 function ShoppingCard({ cart, restaurantId }) {
   const navigate = useNavigate();
@@ -32,30 +33,12 @@ function ShoppingCard({ cart, restaurantId }) {
   const cartList = (
     <ul className="space-y-4">
       {cart.map((item) => (
-        <li
+        <CartItemRow
           key={item.name}
-          className="flex justify-between items-center border-b pb-2"
-        >
-          <span className="min-w-0 flex-1">{item.name}</span>
-          <div className="flex items-center gap-2 mx-3">
-            <button
-              className="w-7 h-7 rounded-full bg-gray-200 hover:bg-gray-300 font-bold"
-              onClick={() => handleDecrease(item)}
-              aria-label={`Decrease ${item.name}`}
-            >
-              −
-            </button>
-            <span className="w-6 text-center">{item.quantity}</span>
-            <button
-              className="w-7 h-7 rounded-full bg-gray-200 hover:bg-gray-300 font-bold"
-              onClick={() => handleIncrease(item)}
-              aria-label={`Increase ${item.name}`}
-            >
-              +
-            </button>
-          </div>
-          <span>€{(item.price * item.quantity).toFixed(2)}</span>
-        </li>
+          item={item}
+          onIncrease={handleIncrease}
+          onDecrease={handleDecrease}
+        />
       ))}
     </ul>
   );

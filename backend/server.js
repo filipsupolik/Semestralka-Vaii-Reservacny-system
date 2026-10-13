@@ -11,6 +11,7 @@ const menuItemRouter = require("./src/routes/menuItemRouter");
 const menuCategoryRouter = require("./src/routes/menuCategoryRouter");
 const ingredientRouter = require("./src/routes/ingredientRouter");
 const orderRouter = require("./src/routes/orderRouter");
+const userRouter = require("./src/routes/userRouter");
 
 dotenv.config();
 
@@ -31,6 +32,7 @@ app.use("/restaurant/:restaurantId", orderRouter);
 app.use("/category", categoryRouter);
 app.use("/menu-categories", menuCategoryRouter);
 app.use("/ingredients", ingredientRouter);
+app.use("/users", userRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

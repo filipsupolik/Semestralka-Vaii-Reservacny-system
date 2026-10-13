@@ -7,7 +7,6 @@ import {
   DialogActions,
   TextField,
   Button,
-  Stack,
   Checkbox,
   FormControlLabel,
 } from "@mui/material";
@@ -90,13 +89,13 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
       <DialogTitle>{isRegistering ? "Register" : "Log in"}</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit}>
-          <Stack spacing={2} direction="column">
+          <div className="flex flex-col gap-4">
             {isRegistering && (
               <>
                 <TextField
                   label="First name"
                   variant="standard"
-                  margin="normal"
+                  className="mt-4 mb-2"
                   value={firstName}
                   onChange={(event) => setFirstName(event.target.value)}
                   required
@@ -104,7 +103,7 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
                 <TextField
                   label="Last name"
                   variant="standard"
-                  margin="normal"
+                  className="mt-4 mb-2"
                   value={lastName}
                   onChange={(event) => setLastName(event.target.value)}
                   required
@@ -114,7 +113,7 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
             <TextField
               label="Email"
               variant="standard"
-              margin="normal"
+              className="mt-4 mb-2"
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -123,7 +122,7 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
             <TextField
               label="Password"
               variant="standard"
-              margin="normal"
+              className="mt-4 mb-2"
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -133,7 +132,7 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
               <TextField
                 label="Phone number"
                 variant="standard"
-                margin="normal"
+                className="mt-4 mb-2"
                 value={phoneNumber}
                 onChange={(event) => setPhoneNumber(event.target.value)}
                 required
@@ -169,7 +168,7 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
                 ? "Already have an account? Log in"
                 : "Don't have an account? Register"}
             </Button>
-          </Stack>
+          </div>
         </form>
       </DialogContent>
     </Dialog>

@@ -6,3 +6,4 @@ export { authService } from "./authService";
 export { categoryService } from "./categoryService";
 export { ingredientService } from "./ingredientService";
 export { orderService } from "./orderService";
+export { userService } from "./userService";

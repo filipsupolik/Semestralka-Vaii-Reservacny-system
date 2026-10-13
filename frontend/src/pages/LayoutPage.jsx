@@ -5,6 +5,7 @@ import {
   Footer,
   TopBar,
   CreateRestaurantDialog,
+  OwnerDashboardActions,
 } from "../components/index";
 import { useAuth, useDashboard } from "../context";
 import { authService, restaurantService } from "../services";
@@ -21,9 +22,6 @@ function LayoutPage() {
   const currentRoute = matches.at(-1);
   const meta = currentRoute?.handle ?? {};
   const isOwnerDashboard = useLocation().pathname === "/owner-dashboard";
-
-  const actionButtonClass =
-    "cursor-pointer rounded-[25px] border-0 bg-[#00b7ff] px-[15px] py-[5px] text-base font-extrabold text-white disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-60";
 
   const openDialog = (type) => {
     setDialogType(type);
@@ -104,29 +102,12 @@ function LayoutPage() {
         userRole={userRole}
         actionButtons={
           isOwnerDashboard ? (
-            <div className="flex items-center gap-[15px]">
-              <button
-                className={actionButtonClass}
-                disabled={selectedProject !== null}
-                onClick={() => setIsRestaurantDialogOpen(true)}
-              >
-                New
-              </button>
-              <button
-                className={actionButtonClass}
-                disabled={!selectedProject}
-                onClick={handleUpdateRestaurantClick}
-              >
-                Update
-              </button>
-              <button
-                className={actionButtonClass}
-                disabled={!selectedProject}
-                onClick={handleDeleteRestaurantClick}
-              >
-                Delete
-              </button>
-            </div>
+            <OwnerDashboardActions
+              selectedProject={selectedProject}
+              onNew={() => setIsRestaurantDialogOpen(true)}
+              onUpdate={handleUpdateRestaurantClick}
+              onDelete={handleDeleteRestaurantClick}
+            />
           ) : null
         }
         onLogout={logout}

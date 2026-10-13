@@ -26,4 +26,6 @@ apiService.interceptors.response.use(
   },
 );
 
-export { apiService, API_BASE_URL };
+const getImageUrl = (path) => (path ? `${API_BASE_URL}${path}` : null);
+
+export { apiService, API_BASE_URL, getImageUrl };

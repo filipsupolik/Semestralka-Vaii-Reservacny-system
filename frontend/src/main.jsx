@@ -15,6 +15,7 @@ import RestaurantPage from "./pages/RestaurantPage";
 import PaymentPage from "./pages/PaymentPage";
 import ProfilePage from "./pages/ProfilePage";
 import OwnerDashboardPage from "./pages/OwnerDashboardPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
 
 const router = createBrowserRouter([
   {
@@ -66,6 +67,15 @@ const router = createBrowserRouter([
         element: <OwnerDashboardPage />,
         handle: {
           title: "Owner Dashboard",
+          showBack: true,
+          showHome: true,
+        },
+      },
+      {
+        path: "/admin",
+        element: <AdminDashboardPage />,
+        handle: {
+          title: "Admin",
           showBack: true,
           showHome: true,
         },

@@ -28,34 +28,16 @@ const MenuItemDialog = ({ open, onClose, item, onAddToCart }) => {
     <Dialog open={open} onClose={onClose} maxWidth="xs">
       <DialogTitle>{item.title}</DialogTitle>
       <DialogContent>
-        <img
-          src={item.image}
-          alt={item.title}
-          style={{ width: "100%", borderRadius: "8px" }}
-        />
-        <Typography variant="h6" style={{ marginTop: "16px" }}>
+        <img src={item.image} alt={item.title} className="w-full rounded-lg" />
+        <Typography variant="h6" className="mt-4">
           Price: ${item.price}
         </Typography>
-        <Typography variant="body1" style={{ marginTop: "8px" }}>
+        <Typography variant="body1" className="mt-2">
           Ingredients: {item.ingredients.join(", ")}
         </Typography>
       </DialogContent>
-      <DialogActions
-        style={{
-          display: "flex",
-          justifyContent: "space-evenly",
-          padding: "16px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            backgroundColor: "#f0f0f0",
-            borderRadius: "32px",
-          }}
-        >
+      <DialogActions className="justify-evenly p-4">
+        <div className="flex items-center gap-2 rounded-full bg-[#f0f0f0]">
           <IconButton onClick={handleDecrease}>
             <Remove />
           </IconButton>

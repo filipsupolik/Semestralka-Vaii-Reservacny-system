@@ -12,7 +12,8 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { categoryService } from "../services";
-import { API_BASE_URL } from "../services/api";
+import { getImageUrl } from "../services/api";
+import ImagePicker from "./ImagePicker";
 
 const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
   const [formData, setFormData] = useState({
@@ -52,9 +53,7 @@ const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
           })),
           image: null,
         });
-        setImagePreview(
-          restaurant.imageUrl ? `${API_BASE_URL}${restaurant.imageUrl}` : null,
-        );
+        setImagePreview(getImageUrl(restaurant.imageUrl));
       } else {
         setFormData({
           name: "",
@@ -87,31 +86,14 @@ const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
     });
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        setErrors((prev) => ({
-          ...prev,
-          image: "Please select an image file",
-        }));
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors((prev) => ({
-          ...prev,
-          image: "Image must be less than 5MB",
-        }));
-        return;
-      }
-      setFormData((prev) => ({ ...prev, image: file }));
-      setErrors((prev) => ({ ...prev, image: "" }));
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleImageSelect = (file, previewUrl) => {
+    setFormData((prev) => ({ ...prev, image: file }));
+    setErrors((prev) => ({ ...prev, image: "" }));
+    setImagePreview(previewUrl);
+  };
+
+  const handleImageError = (message) => {
+    setErrors((prev) => ({ ...prev, image: message }));
   };
 
   const handleSubmit = async (e) => {
@@ -157,7 +139,7 @@ const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
         {restaurant ? "Update Restaurant" : "Create New Restaurant"}
       </DialogTitle>
       <DialogContent>
-        <Box component="form" sx={{ mt: 2 }}>
+        <Box component="form" className="mt-4">
           <TextField
             fullWidth
             label="Restaurant Name"
@@ -166,7 +148,7 @@ const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
             onChange={handleInputChange}
             error={!!errors.name}
             helperText={errors.name}
-            margin="normal"
+            className="mt-4 mb-2"
             required
           />
 
@@ -178,7 +160,7 @@ const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
             onChange={handleInputChange}
             error={!!errors.address}
             helperText={errors.address}
-            margin="normal"
+            className="mt-4 mb-2"
             required
           />
 
@@ -190,19 +172,19 @@ const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
             onChange={handleInputChange}
             error={!!errors.description}
             helperText={errors.description}
-            margin="normal"
+            className="mt-4 mb-2"
             multiline
             rows={3}
             required
           />
 
-          <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
+          <Typography variant="subtitle1" className="mt-4 mb-2">
             Categories *
           </Typography>
           {isLoadingCategories ? (
             <CircularProgress size={24} />
           ) : (
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+            <Box className="flex flex-wrap gap-2">
               {categories.map((category) => (
                 <Chip
                   key={category.categoryId}
@@ -221,48 +203,29 @@ const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
             </Box>
           )}
           {errors.categories && (
-            <Typography color="error" variant="caption" sx={{ mt: 1 }}>
+            <Typography color="error" variant="caption" className="mt-2">
               {errors.categories}
             </Typography>
           )}
 
-          <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
+          <Typography variant="subtitle1" className="mt-4 mb-2">
             Restaurant Image (Optional)
           </Typography>
-          <input
-            accept="image/*"
-            type="file"
-            id="restaurant-image"
-            onChange={handleImageChange}
-            style={{ display: "none" }}
+          <ImagePicker
+            inputId="restaurant-image"
+            preview={imagePreview}
+            onFileSelect={handleImageSelect}
+            onError={handleImageError}
+            previewClassName="max-h-[200px] w-full rounded-lg object-cover"
           />
-          <label htmlFor="restaurant-image">
-            <Button variant="outlined" component="span" fullWidth>
-              Choose Image
-            </Button>
-          </label>
           {errors.image && (
-            <Typography color="error" variant="caption" sx={{ mt: 1 }}>
+            <Typography color="error" variant="caption" className="mt-2">
               {errors.image}
             </Typography>
           )}
-          {imagePreview && (
-            <Box sx={{ mt: 2 }}>
-              <img
-                src={imagePreview}
-                alt="Preview"
-                style={{
-                  width: "100%",
-                  maxHeight: "200px",
-                  objectFit: "cover",
-                  borderRadius: "8px",
-                }}
-              />
-            </Box>
-          )}
         </Box>
         {errors.submit && (
-          <Typography color="error" sx={{ mt: 2 }}>
+          <Typography color="error" className="mt-4">
             {errors.submit}
           </Typography>
         )}

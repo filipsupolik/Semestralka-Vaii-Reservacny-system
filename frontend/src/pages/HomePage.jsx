@@ -1,25 +1,11 @@
 import RestaurantCard from "../components/RestaurantCard";
 import { useNavigate } from "react-router-dom";
 import { useTopRestaurants } from "../hooks";
-import { API_BASE_URL } from "../services/api";
+import { getRestaurantCuisine, getRestaurantImage } from "../utils/restaurant";
 
 const HomePage = () => {
   const navigate = useNavigate();
   const { restaurants, isLoading } = useTopRestaurants();
-
-  const getRestaurantCuisine = (restaurant) => {
-    if (restaurant.categories && restaurant.categories.length > 0) {
-      return restaurant.categories.map((c) => c.category?.name).filter(Boolean);
-    }
-    return restaurant.cuisine || [];
-  };
-
-  const getRestaurantImage = (restaurant) => {
-    if (restaurant.imageUrl) {
-      return `${API_BASE_URL}${restaurant.imageUrl}`;
-    }
-    return restaurant.image || "https://via.placeholder.com/300";
-  };
 
   return (
     <div className="bg-gray-100 min-h-screen">

@@ -1,7 +1,13 @@
 const { prisma } = require("../../lib/prisma");
 
 async function getAllCategories() {
-  return prisma.category.findMany();
+  return prisma.category.findMany({
+    include: {
+      _count: {
+        select: { restaurants: true },
+      },
+    },
+  });
 }
 
 async function getCategoryById(categoryId) {
@@ -29,9 +35,17 @@ async function updateCategory({ categoryId, name, imageUrl }) {
   });
 }
 
+async function deleteCategory(categoryId) {
+  return prisma.$transaction([
+    prisma.restaurantCategory.deleteMany({ where: { categoryId } }),
+    prisma.category.delete({ where: { categoryId } }),
+  ]);
+}
+
 module.exports = {
   getAllCategories,
   getCategoryById,
   addCategory,
   updateCategory,
+  deleteCategory,
 };

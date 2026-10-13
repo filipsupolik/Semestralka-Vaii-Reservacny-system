@@ -3,8 +3,11 @@ import { useDashboard, useMenu } from "../context";
 import { useMyRestaurants } from "../hooks/useRestaurants";
 import { useOrders } from "../hooks/useOrders";
 import AddMenuItemDialog from "../components/AddMenuItemDialog";
-
-const ORDER_STATUSES = ["PENDING", "PREPARING", "COMPLETED", "CANCELLED"];
+import ActionButton from "../components/ActionButton";
+import DashboardPanel from "../components/DashboardPanel";
+import OwnerRestaurantCard from "../components/OwnerRestaurantCard";
+import OrderCard from "../components/OrderCard";
+import MenuItemListItem from "../components/MenuItemListItem";
 
 function OwnerDashboardPage() {
   const { selectedProject, toggleProject } = useDashboard();
@@ -64,9 +67,6 @@ function OwnerDashboardPage() {
     }
   };
 
-  const actionButtonClass =
-    "cursor-pointer rounded-[25px] border-0 bg-[#00b7ff] px-[15px] py-[10px] text-base font-extrabold text-white disabled:cursor-not-allowed disabled:bg-gray-400 disabled:opacity-60";
-
   return (
     <main className="min-h-screen w-full min-[1040px]:h-screen min-[1040px]:overflow-hidden">
       <section className="h-full w-full">
@@ -76,185 +76,74 @@ function OwnerDashboardPage() {
               <h3>Your restaurants</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 auto-rows-fr gap-[15px]">
                 {restaurants.map((restaurant) => (
-                  <div
+                  <OwnerRestaurantCard
                     key={restaurant.restaurantId}
-                    className={`flex min-w-0 cursor-pointer flex-col rounded-[15px] border-l-[5px] border-[#ffa600] bg-white p-5 transition-transform ${selectedProject === restaurant.restaurantId ? "-translate-y-1 border-2 border-[#00b7ff] shadow-lg" : "hover:-translate-y-1 hover:shadow-md"}`}
-                    onClick={() => toggleProject(restaurant.restaurantId)}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    <h3>{restaurant.name}</h3>
-                    <p className="mb-[25px] text-[#615f5f]">
-                      {restaurant.description}
-                    </p>
-
-                    <p className="mb-[25px] text-[#615f5f]">
-                      {restaurant.address}
-                    </p>
-                    <img
-                      src={
-                        restaurant.imageUrl
-                          ? `http://localhost:3000${restaurant.imageUrl}`
-                          : ""
-                      }
-                      alt={restaurant.name}
-                      className="w-full h-32 sm:h-40 object-cover rounded"
-                    />
-                  </div>
+                    restaurant={restaurant}
+                    selected={selectedProject === restaurant.restaurantId}
+                    onSelect={toggleProject}
+                  />
                 ))}
               </div>
             </div>
-            <div className="flex min-[1040px]:min-h-0 flex-col">
-              <h3 className="shrink-0">Orders</h3>
-              <div className="min-[1040px]:min-h-0 min-[1040px]:flex-1 overflow-y-auto rounded-[10px] bg-white p-[25px]">
-                {!selectedProject ? (
-                  <p className="text-[#615f5f]">
-                    Select a restaurant to view its orders
-                  </p>
-                ) : ordersLoading ? (
-                  <p className="text-[#615f5f]">Loading orders...</p>
-                ) : ordersError ? (
-                  <p className="text-red-500">{ordersError}</p>
-                ) : orders.length === 0 ? (
-                  <p className="text-[#615f5f]">
-                    This restaurant has no orders
-                  </p>
-                ) : (
-                  orders.map((order) => (
-                    <div
-                      key={order.orderId}
-                      className="rounded-[8px] border-b-2 border-[#b8b8b8] px-[10px] py-[15px] last:border-b-0"
-                    >
-                      <div className="flex justify-between items-center">
-                        <h4>Order #{order.orderId}</h4>
-                        <select
-                          className="hidden min-[1040px]:block cursor-pointer rounded-[8px] border border-gray-300 bg-white px-2 py-1 text-sm"
-                          value={order.status}
-                          onChange={(e) =>
-                            handleStatusChange(order.orderId, e.target.value)
-                          }
-                        >
-                          {[...new Set([order.status, ...ORDER_STATUSES])].map(
-                            (status) => (
-                              <option key={status} value={status}>
-                                {status}
-                              </option>
-                            ),
-                          )}
-                        </select>
-                      </div>
-                      <p className="text-[#615f5f]">
-                        {order.customer.firstName} {order.customer.lastName} (
-                        {order.customer.email})
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(order.createdAt).toLocaleString()}
-                      </p>
-                      <select
-                        className="min-[1040px]:hidden mt-1 cursor-pointer rounded-[8px] border border-gray-300 bg-white px-2 py-1 text-sm"
-                        value={order.status}
-                        onChange={(e) =>
-                          handleStatusChange(order.orderId, e.target.value)
-                        }
-                      >
-                        {[...new Set([order.status, ...ORDER_STATUSES])].map(
-                          (status) => (
-                            <option key={status} value={status}>
-                              {status}
-                            </option>
-                          ),
-                        )}
-                      </select>
-                      <ul className="mt-1">
-                        {order.orderItems.map((item) => (
-                          <li
-                            key={item.orderItemId}
-                            className="flex justify-between text-sm"
-                          >
-                            <span>
-                              {item.menuItem.name} × {item.quantity}
-                            </span>
-                            <span>
-                              €{Number(item.price_at_order_time).toFixed(2)}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                      <p className="mt-1 text-right font-bold text-red-500">
-                        €{Number(order.totalPrice).toFixed(2)}
-                      </p>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-            <div className="flex min-[1040px]:min-h-0 flex-col">
-              <h3 className="shrink-0">Menu</h3>
-              <div className="min-[1040px]:min-h-0 min-[1040px]:flex-1 overflow-y-auto rounded-[10px] bg-white p-[25px]">
-                {!selectedProject ? (
-                  <p className="text-[#615f5f]">
-                    Select a restaurant to view its menu
-                  </p>
-                ) : isLoading ? (
-                  <p className="text-[#615f5f]">Loading menu...</p>
-                ) : error ? (
-                  <p className="text-red-500">{error}</p>
-                ) : menuItems.length === 0 ? (
-                  <p className="text-[#615f5f]">No menu items yet</p>
-                ) : (
-                  menuItems.map((item) => (
-                    <div
-                      key={item.menuItemId}
-                      className={`cursor-pointer rounded-[8px] border-b-2 border-[#b8b8b8] px-[10px] py-[15px] transition-colors last:border-b-0 ${selectedMenuItem?.menuItemId === item.menuItemId ? "border-2 border-[#00b7ff] bg-[#e8f7ff]" : "hover:bg-gray-50"}`}
-                      onClick={() =>
-                        setSelectedMenuItem(
-                          selectedMenuItem?.menuItemId === item.menuItemId
-                            ? null
-                            : item,
-                        )
-                      }
-                      role="button"
-                      tabIndex={0}
-                    >
-                      <div className="flex justify-between items-center">
-                        <h4>{item.name}</h4>
-                        <span className="font-bold text-red-500">
-                          €{item.price}
-                        </span>
-                      </div>
-                      <p className="text-[#615f5f]">{item.description}</p>
-                      {item.category && (
-                        <span className="text-sm text-gray-500">
-                          {item.category.name}
-                        </span>
-                      )}
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
+            <DashboardPanel title="Orders">
+              {!selectedProject ? (
+                <p className="text-[#615f5f]">
+                  Select a restaurant to view its orders
+                </p>
+              ) : ordersLoading ? (
+                <p className="text-[#615f5f]">Loading orders...</p>
+              ) : ordersError ? (
+                <p className="text-red-500">{ordersError}</p>
+              ) : orders.length === 0 ? (
+                <p className="text-[#615f5f]">This restaurant has no orders</p>
+              ) : (
+                orders.map((order) => (
+                  <OrderCard
+                    key={order.orderId}
+                    order={order}
+                    onStatusChange={handleStatusChange}
+                  />
+                ))
+              )}
+            </DashboardPanel>
+            <DashboardPanel title="Menu">
+              {!selectedProject ? (
+                <p className="text-[#615f5f]">
+                  Select a restaurant to view its menu
+                </p>
+              ) : isLoading ? (
+                <p className="text-[#615f5f]">Loading menu...</p>
+              ) : error ? (
+                <p className="text-red-500">{error}</p>
+              ) : menuItems.length === 0 ? (
+                <p className="text-[#615f5f]">No menu items yet</p>
+              ) : (
+                menuItems.map((item) => (
+                  <MenuItemListItem
+                    key={item.menuItemId}
+                    item={item}
+                    selected={selectedMenuItem?.menuItemId === item.menuItemId}
+                    onSelect={setSelectedMenuItem}
+                  />
+                ))
+              )}
+            </DashboardPanel>
             <div className="flex min-[1040px]:min-h-0 flex-col justify-center gap-[15px]">
-              <button
-                className={actionButtonClass}
-                onClick={handleAddClick}
-                disabled={!canAddMenuItem}
-              >
+              <ActionButton onClick={handleAddClick} disabled={!canAddMenuItem}>
                 Add Menu Item
-              </button>
-              <button
-                className={actionButtonClass}
+              </ActionButton>
+              <ActionButton
                 onClick={handleUpdateClick}
                 disabled={selectedMenuItem === null}
               >
                 Update Menu Item
-              </button>
-              <button
-                className={actionButtonClass}
+              </ActionButton>
+              <ActionButton
                 onClick={handleDeleteClick}
                 disabled={selectedMenuItem === null}
               >
                 Delete Menu Item
-              </button>
+              </ActionButton>
             </div>
           </div>
         </div>

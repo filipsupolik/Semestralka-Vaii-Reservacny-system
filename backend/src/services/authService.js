@@ -2,6 +2,20 @@ const bcrypt = require("bcryptjs");
 const { prisma } = require("../../lib/prisma");
 const jwt = require("jsonwebtoken");
 
+async function getUserById(userId) {
+  return prisma.user.findUnique({
+    where: { userId },
+    select: {
+      userId: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      phoneNumber: true,
+      role: true,
+    },
+  });
+}
+
 async function findUser(req) {
   const { email } = req.body;
 
@@ -61,4 +75,10 @@ async function registerUser(req) {
   });
 }
 
-module.exports = { registerUser, findUser, checkPassword, login };
+module.exports = {
+  registerUser,
+  findUser,
+  checkPassword,
+  login,
+  getUserById,
+};

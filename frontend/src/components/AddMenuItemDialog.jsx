@@ -13,10 +13,10 @@ import {
   FormControl,
   InputLabel,
   CircularProgress,
-  Stack,
 } from "@mui/material";
 import { useMenu } from "../context";
-import { API_BASE_URL } from "../services/api";
+import { getImageUrl } from "../services/api";
+import ImagePicker from "./ImagePicker";
 
 const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
   const {
@@ -55,9 +55,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
         ),
         image: null,
       });
-      setImagePreview(
-        menuItem.imageUrl ? `${API_BASE_URL}${menuItem.imageUrl}` : null,
-      );
+      setImagePreview(getImageUrl(menuItem.imageUrl));
     } else if (open) {
       setImagePreview(null);
     }
@@ -74,31 +72,14 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
     setErrors((prev) => ({ ...prev, ingredients: "" }));
   };
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      if (!file.type.startsWith("image/")) {
-        setErrors((prev) => ({
-          ...prev,
-          image: "Please select an image file",
-        }));
-        return;
-      }
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors((prev) => ({
-          ...prev,
-          image: "Image must be less than 5MB",
-        }));
-        return;
-      }
-      setFormData((prev) => ({ ...prev, image: file }));
-      setErrors((prev) => ({ ...prev, image: "" }));
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleImageSelect = (file, previewUrl) => {
+    setFormData((prev) => ({ ...prev, image: file }));
+    setErrors((prev) => ({ ...prev, image: "" }));
+    setImagePreview(previewUrl);
+  };
+
+  const handleImageError = (message) => {
+    setErrors((prev) => ({ ...prev, image: message }));
   };
 
   const handleSubmit = async (e) => {
@@ -208,7 +189,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
         {menuItem ? "Update Menu Item" : "Add Menu Item"}
       </DialogTitle>
       <DialogContent>
-        <Box component="form" sx={{ mt: 2 }}>
+        <Box component="form" className="mt-4">
           <TextField
             fullWidth
             label="Item Name"
@@ -217,7 +198,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
             onChange={handleInputChange}
             error={!!errors.name}
             helperText={errors.name}
-            margin="normal"
+            className="mt-4 mb-2"
             required
           />
 
@@ -229,7 +210,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
             onChange={handleInputChange}
             error={!!errors.description}
             helperText={errors.description}
-            margin="normal"
+            className="mt-4 mb-2"
             multiline
             rows={3}
             required
@@ -245,11 +226,15 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
             onChange={handleInputChange}
             error={!!errors.price}
             helperText={errors.price}
-            margin="normal"
+            className="mt-4 mb-2"
             required
           />
 
-          <FormControl fullWidth margin="normal" error={!!errors.categoryId}>
+          <FormControl
+            fullWidth
+            className="mt-4 mb-2"
+            error={!!errors.categoryId}
+          >
             <InputLabel>Category</InputLabel>
             {isLoadingCategories ? (
               <CircularProgress size={24} />
@@ -274,7 +259,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
               </Select>
             )}
             {formData.categoryId === "__new__" && (
-              <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+              <div className="mt-2 flex gap-2">
                 <TextField
                   fullWidth
                   size="small"
@@ -290,7 +275,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
                 >
                   Add
                 </Button>
-              </Stack>
+              </div>
             )}
             {errors.categoryId && (
               <Typography color="error" variant="caption">
@@ -299,7 +284,11 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
             )}
           </FormControl>
 
-          <FormControl fullWidth margin="normal" error={!!errors.ingredients}>
+          <FormControl
+            fullWidth
+            className="mt-4 mb-2"
+            error={!!errors.ingredients}
+          >
             <InputLabel>Ingredients</InputLabel>
             <Select
               multiple
@@ -320,7 +309,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
                 </MenuItem>
               ))}
             </Select>
-            <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+            <div className="mt-2 flex gap-2">
               <TextField
                 fullWidth
                 size="small"
@@ -335,7 +324,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
               >
                 Add
               </Button>
-            </Stack>
+            </div>
             {errors.ingredients && (
               <Typography color="error" variant="caption">
                 {errors.ingredients}
@@ -343,43 +332,23 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
             )}
           </FormControl>
 
-          <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
+          <Typography variant="subtitle1" className="mt-4 mb-2">
             Item Image (Optional)
           </Typography>
-          <input
-            accept="image/*"
-            type="file"
-            id="menu-item-image"
-            onChange={handleImageChange}
-            style={{ display: "none" }}
+          <ImagePicker
+            inputId="menu-item-image"
+            preview={imagePreview}
+            onFileSelect={handleImageSelect}
+            onError={handleImageError}
           />
-          <label htmlFor="menu-item-image">
-            <Button variant="outlined" component="span" fullWidth>
-              Choose Image
-            </Button>
-          </label>
           {errors.image && (
-            <Typography color="error" variant="caption" sx={{ mt: 1 }}>
+            <Typography color="error" variant="caption" className="mt-2">
               {errors.image}
             </Typography>
           )}
-          {imagePreview && (
-            <Box sx={{ mt: 2 }}>
-              <img
-                src={imagePreview}
-                alt="Preview"
-                style={{
-                  width: "128px",
-                  height: "128px",
-                  objectFit: "cover",
-                  borderRadius: "50%",
-                }}
-              />
-            </Box>
-          )}
         </Box>
         {errors.submit && (
-          <Typography color="error" sx={{ mt: 2 }}>
+          <Typography color="error" className="mt-4">
             {errors.submit}
           </Typography>
         )}

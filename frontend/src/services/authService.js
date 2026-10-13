@@ -59,6 +59,10 @@ export const authService = {
     return response;
   },
 
+  async getProfile() {
+    return apiService.get("/auth/me");
+  },
+
   logout() {
     localStorage.removeItem("authToken");
     localStorage.removeItem("userRole");

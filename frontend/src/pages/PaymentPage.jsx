@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { PaymentCard } from "../components/index";
 import { useAuth, useCart } from "../context";
 import { orderService, restaurantService } from "../services";
-import { API_BASE_URL } from "../services/api";
+import { getImageUrl } from "../services/api";
 
 const PLACEHOLDER_LOGO = "https://via.placeholder.com/50";
 const DELIVERY_FEE = 3.5;
@@ -74,11 +74,7 @@ function PaymentPage() {
     <div>
       <PaymentCard
         restaurantName={restaurant?.name ?? ""}
-        logo={
-          restaurant?.imageUrl
-            ? `${API_BASE_URL}${restaurant.imageUrl}`
-            : PLACEHOLDER_LOGO
-        }
+        logo={getImageUrl(restaurant?.imageUrl) ?? PLACEHOLDER_LOGO}
         cartItems={cart}
         subtotal={subtotal}
         deliveryFee={DELIVERY_FEE}

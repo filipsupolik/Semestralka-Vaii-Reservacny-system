@@ -5,12 +5,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Grid,
   Button,
 } from "@mui/material";
 import SearchBar from "./SearchBar";
 import CategoryCard from "./CategoryCard";
-import { API_BASE_URL } from "../services/api";
+import { getImageUrl } from "../services/api";
 
 function ShowAllCategoriesDialog({
   isOpen,
@@ -42,22 +41,17 @@ function ShowAllCategoriesDialog({
           title={"Prehladaj kategorie"}
           onSearch={handleSearchChange}
         />
-        <Grid container spacing={4}>
+        <div className="mt-4 grid grid-cols-3 gap-8 sm:grid-cols-4">
           {filteredCategories.map((category) => (
-            <Grid item xs={4} sm={3} key={category.categoryId ?? category.id}>
-              <CategoryCard
-                image={
-                  category.imageUrl
-                    ? `${API_BASE_URL}${category.imageUrl}`
-                    : undefined
-                }
-                title={category.name}
-                selected={selectedCategory === category.name}
-                onClick={() => handleSelect(category.name)}
-              />
-            </Grid>
+            <CategoryCard
+              key={category.categoryId ?? category.id}
+              image={getImageUrl(category.imageUrl) ?? undefined}
+              title={category.name}
+              selected={selectedCategory === category.name}
+              onClick={() => handleSelect(category.name)}
+            />
           ))}
-        </Grid>
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="primary">

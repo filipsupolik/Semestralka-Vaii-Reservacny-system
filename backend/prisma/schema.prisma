@@ -21,6 +21,7 @@ model User {
   password       String
   phoneNumber    String
   role           Role
+  isActive       Boolean       @default(true)
   restaurants    Restaurant[]
   orders         Order[]
   menuCategories MenuCategory[]
