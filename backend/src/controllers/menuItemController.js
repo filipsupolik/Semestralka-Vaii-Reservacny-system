@@ -4,26 +4,13 @@ const menuItemService = require("../services/menuItemService");
 const menuCategoryService = require("../services/menuCategoryService");
 const ingredientService = require("../services/ingredientService");
 
-async function parseIngredientIds(raw) {
-  if (!raw) return [];
-
-  let ids;
-  try {
-    ids = JSON.parse(raw);
-  } catch {
-    return null;
-  }
-
-  if (!Array.isArray(ids)) return null;
-
+async function verifyIngredientIds(ids) {
   for (const id of ids) {
-    const ingredient = await ingredientService.getIngredientById(
-      parseInt(id, 10),
-    );
-    if (!ingredient) return null;
+    const ingredient = await ingredientService.getIngredientById(id);
+    if (!ingredient) return false;
   }
 
-  return ids.map((id) => parseInt(id, 10));
+  return true;
 }
 
 function unlinkImage(imageUrl) {
@@ -35,9 +22,7 @@ function unlinkImage(imageUrl) {
 async function getMenuItems(req, res) {
   try {
     const { restaurantId } = req.params;
-    const menuItems = await menuItemService.getMenuItems(
-      parseInt(restaurantId),
-    );
+    const menuItems = await menuItemService.getMenuItems(restaurantId);
     res.status(200).json(menuItems);
   } catch (error) {
     console.error("Error fetching menu items:", error);
@@ -48,17 +33,9 @@ async function getMenuItems(req, res) {
 async function createMenuItem(req, res) {
   try {
     const { restaurantId } = req.params;
-    const { name, description, price, categoryId } = req.body;
+    const { name, description, price, categoryId, ingredients } = req.body;
 
-    if (!name || !description || !price || !categoryId) {
-      return res.status(400).json({
-        message: "Name, description, price, and categoryId are required",
-      });
-    }
-
-    const restaurant = await menuItemService.getRestaurantById(
-      parseInt(restaurantId),
-    );
+    const restaurant = await menuItemService.getRestaurantById(restaurantId);
 
     if (!restaurant || restaurant.deletedAt) {
       return res.status(404).json({ message: "Restaurant not found" });
@@ -68,9 +45,7 @@ async function createMenuItem(req, res) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    const category = await menuCategoryService.getMenuCategoryById(
-      parseInt(categoryId),
-    );
+    const category = await menuCategoryService.getMenuCategoryById(categoryId);
 
     if (!category) {
       return res.status(400).json({ message: "Category not found" });
@@ -80,8 +55,8 @@ async function createMenuItem(req, res) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    const ingredientIds = await parseIngredientIds(req.body.ingredients);
-    if (ingredientIds === null) {
+    const ingredientsValid = await verifyIngredientIds(ingredients);
+    if (!ingredientsValid) {
       return res
         .status(400)
         .json({ message: "Invalid or unknown ingredients" });
@@ -96,9 +71,9 @@ async function createMenuItem(req, res) {
       description,
       price,
       imageUrl,
-      categoryId: parseInt(categoryId),
-      restaurantId: parseInt(restaurantId),
-      ingredientIds,
+      categoryId,
+      restaurantId,
+      ingredientIds: ingredients,
     });
 
     res.status(201).json(menuItem);
@@ -111,17 +86,9 @@ async function createMenuItem(req, res) {
 async function updateMenuItem(req, res) {
   try {
     const { menuItemId } = req.params;
-    const { name, description, price, categoryId } = req.body;
+    const { name, description, price, categoryId, ingredients } = req.body;
 
-    if (!name || !description || !price || !categoryId) {
-      return res.status(400).json({
-        message: "Name, description, price, and categoryId are required",
-      });
-    }
-
-    const existing = await menuItemService.getMenuItemWithOwner(
-      parseInt(menuItemId),
-    );
+    const existing = await menuItemService.getMenuItemWithOwner(menuItemId);
 
     if (!existing) {
       return res.status(404).json({ message: "Menu item not found" });
@@ -131,9 +98,7 @@ async function updateMenuItem(req, res) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    const category = await menuCategoryService.getMenuCategoryById(
-      parseInt(categoryId),
-    );
+    const category = await menuCategoryService.getMenuCategoryById(categoryId);
 
     if (!category) {
       return res.status(400).json({ message: "Category not found" });
@@ -143,8 +108,8 @@ async function updateMenuItem(req, res) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    const ingredientIds = await parseIngredientIds(req.body.ingredients);
-    if (ingredientIds === null) {
+    const ingredientsValid = await verifyIngredientIds(ingredients);
+    if (!ingredientsValid) {
       return res
         .status(400)
         .json({ message: "Invalid or unknown ingredients" });
@@ -155,13 +120,13 @@ async function updateMenuItem(req, res) {
       : undefined;
 
     const menuItem = await menuItemService.updateMenuItem({
-      menuItemId: parseInt(menuItemId),
+      menuItemId,
       name,
       description,
       price,
       imageUrl,
-      categoryId: parseInt(categoryId),
-      ingredientIds,
+      categoryId,
+      ingredientIds: ingredients,
     });
 
     if (req.file) {
@@ -179,9 +144,7 @@ async function deleteMenuItem(req, res) {
   try {
     const { menuItemId } = req.params;
 
-    const existing = await menuItemService.getMenuItemWithOwner(
-      parseInt(menuItemId),
-    );
+    const existing = await menuItemService.getMenuItemWithOwner(menuItemId);
 
     if (!existing) {
       return res.status(404).json({ message: "Menu item not found" });
@@ -191,7 +154,7 @@ async function deleteMenuItem(req, res) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    await menuItemService.deleteMenuItem(parseInt(menuItemId));
+    await menuItemService.deleteMenuItem(menuItemId);
     unlinkImage(existing.imageUrl);
     res.status(204).send();
   } catch (error) {
@@ -203,9 +166,7 @@ async function deleteMenuItem(req, res) {
 async function getMenuCategories(req, res) {
   try {
     const { restaurantId } = req.params;
-    const categories = await menuItemService.getMenuCategories(
-      parseInt(restaurantId),
-    );
+    const categories = await menuItemService.getMenuCategories(restaurantId);
     res.status(200).json(categories);
   } catch (error) {
     console.error("Error fetching menu categories:", error);

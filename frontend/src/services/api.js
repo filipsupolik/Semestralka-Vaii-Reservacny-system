@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getUserFriendlyMessage } from "../utils/errorMessages";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
@@ -16,13 +17,13 @@ apiService.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle errors
+// Handle errors — translate server responses into user-friendly messages
 apiService.interceptors.response.use(
   (response) => response.data,
   (error) => {
-    const message =
-      error.response?.data?.message || error.message || "An error occurred";
-    throw new Error(message);
+    const friendlyError = new Error(getUserFriendlyMessage(error));
+    friendlyError.status = error.response?.status;
+    throw friendlyError;
   },
 );
 

@@ -16,10 +16,6 @@ async function createMenuCategory(req, res) {
   try {
     const { name } = req.body;
 
-    if (!name) {
-      return res.status(400).json({ message: "Name is required" });
-    }
-
     const category = await menuCategoryService.createMenuCategory({
       name,
       ownerId: req.userId,

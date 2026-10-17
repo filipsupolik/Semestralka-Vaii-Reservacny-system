@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Outlet, useLocation, useMatches } from "react-router-dom";
+import { Alert } from "@mui/material";
 import {
   LoginDialog,
   Footer,
@@ -8,7 +9,7 @@ import {
   OwnerDashboardActions,
 } from "../components/index";
 import { useAuth, useDashboard } from "../context";
-import { authService, restaurantService } from "../services";
+import { restaurantService } from "../services";
 
 function LayoutPage() {
   const matches = useMatches();
@@ -16,6 +17,7 @@ function LayoutPage() {
   const [dialogType, setDialogType] = useState(null);
   const [isRestaurantDialogOpen, setIsRestaurantDialogOpen] = useState(false);
   const [editingRestaurant, setEditingRestaurant] = useState(null);
+  const [actionError, setActionError] = useState(null);
   const { setUser, isAuthenticated, userRole, logout } = useAuth();
   const { selectedProject, refreshRestaurants, clearSelection } =
     useDashboard();
@@ -29,27 +31,15 @@ function LayoutPage() {
   };
   const closeDialog = () => setIsOpen(false);
 
-  const handleLogin = async (loginData) => {
-    try {
-      // loginData contains { loggedUser: { token, user: { email, role } }, message }
-      const { loggedUser } = loginData;
-      if (loggedUser && loggedUser.token) {
-        // Store auth data in localStorage
-        localStorage.setItem("authToken", loggedUser.token);
-        localStorage.setItem("userRole", loggedUser.user.role);
-        localStorage.setItem("userEmail", loggedUser.user.email);
-        authService.startSession();
-
-        // Update auth state
-        setUser({
-          role: loggedUser.user.role,
-          email: loggedUser.user.email,
-        });
-      }
-      closeDialog();
-    } catch (error) {
-      console.error("Login failed:", error);
+  const handleLogin = async (loggedUser) => {
+    // authService.login() already stored token/role/email and started session
+    if (loggedUser?.token) {
+      setUser({
+        role: loggedUser.user.role,
+        email: loggedUser.user.email,
+      });
     }
+    closeDialog();
   };
 
   const handleSaveRestaurant = async (restaurantData) => {
@@ -66,25 +56,27 @@ function LayoutPage() {
 
   const handleUpdateRestaurantClick = async () => {
     if (!selectedProject) return;
+    setActionError(null);
     try {
       const restaurant =
         await restaurantService.getRestaurantById(selectedProject);
       setEditingRestaurant(restaurant);
       setIsRestaurantDialogOpen(true);
     } catch (error) {
-      console.error("Failed to load restaurant:", error);
+      setActionError(error.message);
     }
   };
 
   const handleDeleteRestaurantClick = async () => {
     if (!selectedProject) return;
     if (!window.confirm("Delete this restaurant?")) return;
+    setActionError(null);
     try {
       await restaurantService.deleteRestaurant(selectedProject);
       clearSelection();
       refreshRestaurants();
     } catch (error) {
-      console.error("Failed to delete restaurant:", error);
+      setActionError(error.message);
     }
   };
 
@@ -114,6 +106,15 @@ function LayoutPage() {
       />
       <div className="flex-grow">
         <Outlet />
+        {actionError && (
+          <Alert
+            severity="error"
+            onClose={() => setActionError(null)}
+            className="fixed bottom-4 left-1/2 z-[1400] min-w-[280px] -translate-x-1/2"
+          >
+            {actionError}
+          </Alert>
+        )}
         {dialogType === "login" && (
           <LoginDialog
             isOpen={isOpen}

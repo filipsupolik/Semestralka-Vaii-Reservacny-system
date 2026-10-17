@@ -1,30 +1,12 @@
 const orderService = require("../services/orderService");
 const restaurantService = require("../services/restaurantService");
 
-const ORDER_STATUSES = ["PENDING", "PREPARING", "COMPLETED", "CANCELLED"];
-
 async function createOrder(req, res) {
   try {
     const { restaurantId } = req.params;
     const { items } = req.body;
 
-    if (!Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ message: "Order items are required" });
-    }
-
-    for (const item of items) {
-      if (
-        !Number.isInteger(item.menuItemId) ||
-        !Number.isInteger(item.quantity) ||
-        item.quantity <= 0
-      ) {
-        return res.status(400).json({ message: "Invalid order items" });
-      }
-    }
-
-    const restaurant = await restaurantService.getRestaurantById(
-      parseInt(restaurantId),
-    );
+    const restaurant = await restaurantService.getRestaurantById(restaurantId);
 
     if (!restaurant || restaurant.deletedAt) {
       return res.status(404).json({ message: "Restaurant not found" });
@@ -32,7 +14,7 @@ async function createOrder(req, res) {
 
     const order = await orderService.createOrder({
       customerId: req.userId,
-      restaurantId: parseInt(restaurantId),
+      restaurantId,
       items,
     });
 
@@ -50,9 +32,7 @@ async function createOrder(req, res) {
 async function getOrders(req, res) {
   try {
     const { restaurantId } = req.params;
-    const restaurant = await restaurantService.getRestaurantById(
-      parseInt(restaurantId),
-    );
+    const restaurant = await restaurantService.getRestaurantById(restaurantId);
 
     if (!restaurant || restaurant.deletedAt) {
       return res.status(404).json({ message: "Restaurant not found" });
@@ -62,9 +42,7 @@ async function getOrders(req, res) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    const orders = await orderService.getOrdersByRestaurant(
-      parseInt(restaurantId),
-    );
+    const orders = await orderService.getOrdersByRestaurant(restaurantId);
     res.status(200).json(orders);
   } catch (error) {
     console.error("Error fetching orders:", error);
@@ -77,13 +55,9 @@ async function updateOrderStatus(req, res) {
     const { restaurantId, orderId } = req.params;
     const { status } = req.body;
 
-    if (!status || !ORDER_STATUSES.includes(status)) {
-      return res.status(400).json({ message: "Invalid status" });
-    }
+    const order = await orderService.getOrderWithRestaurant(orderId);
 
-    const order = await orderService.getOrderWithRestaurant(parseInt(orderId));
-
-    if (!order || order.restaurantId !== parseInt(restaurantId)) {
+    if (!order || order.restaurantId !== restaurantId) {
       return res.status(404).json({ message: "Order not found" });
     }
 
@@ -91,10 +65,7 @@ async function updateOrderStatus(req, res) {
       return res.status(403).json({ message: "Forbidden" });
     }
 
-    const updated = await orderService.updateOrderStatus(
-      parseInt(orderId),
-      status,
-    );
+    const updated = await orderService.updateOrderStatus(orderId, status);
     res.status(200).json(updated);
   } catch (error) {
     console.error("Error updating order status:", error);

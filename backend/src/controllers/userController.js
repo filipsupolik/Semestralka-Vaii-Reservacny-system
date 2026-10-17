@@ -1,7 +1,5 @@
 const userService = require("../services/userService");
 
-const ROLES = ["CUSTOMER", "RESTAURANT_OWNER", "ADMIN"];
-
 async function getUsers(req, res) {
   try {
     const users = await userService.getAllUsers();
@@ -14,13 +12,9 @@ async function getUsers(req, res) {
 
 async function updateUser(req, res) {
   try {
-    const userId = parseInt(req.params.userId);
+    const { userId } = req.params;
     const { firstName, lastName, email, phoneNumber, role, isActive } =
       req.body;
-
-    if (role !== undefined && !ROLES.includes(role)) {
-      return res.status(400).json({ message: "Invalid role" });
-    }
 
     if (isActive === false && userId === req.userId) {
       return res

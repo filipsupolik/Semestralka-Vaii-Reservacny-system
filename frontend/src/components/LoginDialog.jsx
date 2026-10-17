@@ -9,7 +9,14 @@ import {
   Button,
   Checkbox,
   FormControlLabel,
+  Typography,
 } from "@mui/material";
+import { authService } from "../services";
+import {
+  PHONE_REGEX,
+  PHONE_PLACEHOLDER,
+  PASSWORD_MIN_LENGTH,
+} from "../constants/validation";
 
 function LoginDialog({ isOpen, handleClose, onLogin }) {
   const [isRegistering, setIsRegistering] = useState(false);
@@ -19,6 +26,8 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
   const [password, setPassword] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isRestaurantOwner, setIsRestaurantOwner] = useState(false);
+  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const resetForm = () => {
     setIsRegistering(false);
@@ -28,64 +37,58 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
     setPassword("");
     setPhoneNumber("");
     setIsRestaurantOwner(false);
+    setError(null);
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setError(null);
+
+    if (isRegistering) {
+      if (password.length < PASSWORD_MIN_LENGTH) {
+        setError(`Password must be at least ${PASSWORD_MIN_LENGTH} characters`);
+        return;
+      }
+      if (phoneNumber.trim() && !PHONE_REGEX.test(phoneNumber.trim())) {
+        setError("Invalid phone number format");
+        return;
+      }
+    }
+
+    setIsSubmitting(true);
 
     try {
-      const response = await fetch(
-        `http://localhost:3000/auth/${isRegistering ? "register" : "login"}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(
-            isRegistering
-              ? {
-                  firstName,
-                  lastName,
-                  email,
-                  password,
-                  phoneNumber,
-                  role: isRestaurantOwner ? "RESTAURANT_OWNER" : "CUSTOMER",
-                }
-              : { email, password },
-          ),
-        },
-      );
-
-      if (!response.ok) {
-        throw new Error(
-          `${isRegistering ? "Registration" : "Login"} failed with status ${response.status}`,
-        );
-      }
-
-      const data = await response.json();
-      console.log(
-        `${isRegistering ? "Registration" : "Login"} successful:`,
-        data,
-      );
-
-      resetForm();
-
       if (isRegistering) {
+        await authService.register({
+          firstName,
+          lastName,
+          email,
+          password,
+          phoneNumber: phoneNumber.trim() || PHONE_PLACEHOLDER,
+          role: isRestaurantOwner ? "RESTAURANT_OWNER" : "CUSTOMER",
+        });
+        resetForm();
         return;
-      } else {
-        onLogin(data);
       }
-    } catch (error) {
-      console.error(
-        `${isRegistering ? "Registration" : "Login"} failed:`,
-        error,
-      );
+
+      const loggedUser = await authService.login(email, password);
+      resetForm();
+      onLogin(loggedUser);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsSubmitting(false);
     }
+  };
+
+  const handleCloseDialog = () => {
+    setError(null);
+    handleClose();
   };
 
   if (!isOpen) return null;
   return (
-    <Dialog open={isOpen} onClose={handleClose}>
+    <Dialog open={isOpen} onClose={handleCloseDialog}>
       <DialogTitle>{isRegistering ? "Register" : "Log in"}</DialogTitle>
       <DialogContent>
         <form onSubmit={handleSubmit}>
@@ -126,16 +129,20 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
+              helperText={
+                isRegistering
+                  ? `At least ${PASSWORD_MIN_LENGTH} characters`
+                  : undefined
+              }
               required
             />
             {isRegistering && (
               <TextField
-                label="Phone number"
+                label="Phone number (optional)"
                 variant="standard"
                 className="mt-4 mb-2"
                 value={phoneNumber}
                 onChange={(event) => setPhoneNumber(event.target.value)}
-                required
               />
             )}
             {isRegistering && (
@@ -151,18 +158,30 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
                 label="Register as restaurant owner"
               />
             )}
+            {error && (
+              <Typography color="error" role="alert">
+                {error}
+              </Typography>
+            )}
             <DialogActions>
-              <Button type="submit" variant="contained">
-                {isRegistering ? "Register" : "Log in"}
+              <Button type="submit" variant="contained" disabled={isSubmitting}>
+                {isSubmitting
+                  ? "Please wait..."
+                  : isRegistering
+                    ? "Register"
+                    : "Log in"}
               </Button>
-              <Button onClick={handleClose} variant="outlined">
+              <Button onClick={handleCloseDialog} variant="outlined">
                 Cancel
               </Button>
             </DialogActions>
             <Button
               type="button"
               variant="text"
-              onClick={() => setIsRegistering((current) => !current)}
+              onClick={() => {
+                setIsRegistering((current) => !current);
+                setError(null);
+              }}
             >
               {isRegistering
                 ? "Already have an account? Log in"

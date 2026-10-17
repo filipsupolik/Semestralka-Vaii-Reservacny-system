@@ -10,10 +10,20 @@ const {
 } = require("../controllers/restaurantController");
 const { authMiddleware, requireRole } = require("../middleware/authMiddleware");
 const { upload, processImage } = require("../middleware/uploadMiddleware");
+const { validate } = require("../middleware/validateMiddleware");
+const {
+  restaurantParamsSchema,
+  restaurantBodySchema,
+  restaurantsQuerySchema,
+} = require("../schemas/restaurantSchemas");
 
 const restaurantRouter = Router();
 
-restaurantRouter.get("/", getRestaurants);
+restaurantRouter.get(
+  "/",
+  validate({ query: restaurantsQuerySchema }),
+  getRestaurants,
+);
 restaurantRouter.get("/top", getTop3);
 restaurantRouter.get(
   "/owned-restaurants",
@@ -21,13 +31,18 @@ restaurantRouter.get(
   requireRole("RESTAURANT_OWNER"),
   getMyRestaurants,
 );
-restaurantRouter.get("/:restaurantId", getRestaurantById);
+restaurantRouter.get(
+  "/:restaurantId",
+  validate({ params: restaurantParamsSchema }),
+  getRestaurantById,
+);
 restaurantRouter.post(
   "/",
   authMiddleware,
   requireRole("RESTAURANT_OWNER"),
   upload.single("image"),
   processImage,
+  validate({ body: restaurantBodySchema }),
   createRestaurant,
 );
 restaurantRouter.put(
@@ -36,12 +51,14 @@ restaurantRouter.put(
   requireRole("RESTAURANT_OWNER"),
   upload.single("image"),
   processImage,
+  validate({ params: restaurantParamsSchema, body: restaurantBodySchema }),
   updateRestaurant,
 );
 restaurantRouter.delete(
   "/:restaurantId",
   authMiddleware,
   requireRole("RESTAURANT_OWNER"),
+  validate({ params: restaurantParamsSchema }),
   deleteRestaurant,
 );
 

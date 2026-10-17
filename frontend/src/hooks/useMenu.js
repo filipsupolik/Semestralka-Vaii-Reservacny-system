@@ -24,7 +24,7 @@ export const useMenuItems = (restaurantId, useMock = true) => {
         }
       } catch (err) {
         setError(err.message);
-        setMenuItems(mockMenuItems);
+        setMenuItems([]);
       } finally {
         setIsLoading(false);
       }
@@ -53,7 +53,7 @@ export const useMenuCategories = (restaurantId, useMock = false) => {
         }
       } catch (err) {
         setError(err.message);
-        setCategories(mockMenuCategories);
+        setCategories([]);
       } finally {
         setIsLoading(false);
       }

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Alert } from "@mui/material";
 import { useAuth } from "../context";
 import { userService, categoryService } from "../services";
 import EditUserDialog from "../components/EditUserDialog";
@@ -32,6 +33,7 @@ function AdminDashboardPage() {
     open: false,
     category: null,
   });
+  const [actionError, setActionError] = useState(null);
   const [version, setVersion] = useState(0);
 
   const isAdmin = isAuthenticated && userRole === "ADMIN";
@@ -114,11 +116,12 @@ function AdminDashboardPage() {
     ) {
       return;
     }
+    setActionError(null);
     try {
       await categoryService.deleteCategory(category.categoryId);
       refresh();
     } catch (err) {
-      alert(err.message);
+      setActionError(err.message);
     }
   };
 
@@ -204,6 +207,16 @@ function AdminDashboardPage() {
           )}
         </div>
       </section>
+
+      {actionError && (
+        <Alert
+          severity="error"
+          onClose={() => setActionError(null)}
+          className="fixed bottom-4 left-1/2 z-[1400] min-w-[280px] -translate-x-1/2"
+        >
+          {actionError}
+        </Alert>
+      )}
 
       <EditUserDialog
         open={editingUser !== null}

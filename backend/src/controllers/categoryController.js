@@ -26,9 +26,6 @@ async function getAllCategories(req, res) {
 async function addCategory(req, res) {
   try {
     const { name } = req.body;
-    if (!name) {
-      return res.status(400).json({ message: "Name is required" });
-    }
 
     const imageUrl = req.file
       ? `/uploads/categories/${req.file.filename}`
@@ -44,10 +41,7 @@ async function addCategory(req, res) {
 
 async function updateCategory(req, res) {
   try {
-    const categoryId = parseInt(req.params.categoryId, 10);
-    if (Number.isNaN(categoryId)) {
-      return res.status(400).json({ message: "Invalid category id" });
-    }
+    const { categoryId } = req.params;
 
     const category = await categoryService.getCategoryById(categoryId);
     if (!category) {
@@ -77,10 +71,7 @@ async function updateCategory(req, res) {
 
 async function deleteCategory(req, res) {
   try {
-    const categoryId = parseInt(req.params.categoryId, 10);
-    if (Number.isNaN(categoryId)) {
-      return res.status(400).json({ message: "Invalid category id" });
-    }
+    const { categoryId } = req.params;
 
     const category = await categoryService.getCategoryById(categoryId);
     if (!category) {

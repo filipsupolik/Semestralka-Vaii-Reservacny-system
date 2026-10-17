@@ -5,7 +5,7 @@ import { getRestaurantCuisine, getRestaurantImage } from "../utils/restaurant";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const { restaurants, isLoading } = useTopRestaurants();
+  const { restaurants, isLoading, error } = useTopRestaurants();
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -37,6 +37,8 @@ const HomePage = () => {
             <div className="text-center text-gray-600">
               Loading restaurants...
             </div>
+          ) : error ? (
+            <div className="text-center text-red-500">{error}</div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {restaurants.map((restaurant) => (

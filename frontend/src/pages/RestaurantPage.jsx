@@ -16,13 +16,13 @@ const RestaurantPage = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const debounceRef = React.useRef(null);
 
-  const { restaurants, totalPages, isLoading } = useRestaurants({
+  const { restaurants, totalPages, isLoading, error } = useRestaurants({
     page,
     pageSize: PAGE_SIZE,
     name: searchName,
     category: selectedCategory,
   });
-  const { categories } = useCategories();
+  const { categories, error: categoriesError } = useCategories();
 
   const handleOpenShowAllDialog = () => {
     setDialogOpen(true);
@@ -73,6 +73,11 @@ const RestaurantPage = () => {
               Show All
             </button>
           </div>
+          {(error || categoriesError) && (
+            <div className="text-center text-red-500 mt-5">
+              {error || categoriesError}
+            </div>
+          )}
           {isLoading ? (
             <div className="text-center text-gray-600 mt-5">
               Loading restaurants...

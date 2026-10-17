@@ -4,6 +4,8 @@ const {
   createIngredient,
   getAllIngredients,
 } = require("../controllers/ingredientController");
+const { validate } = require("../middleware/validateMiddleware");
+const { ingredientBodySchema } = require("../schemas/ingredientSchemas");
 
 const ingredientRouter = Router();
 
@@ -18,6 +20,7 @@ ingredientRouter.post(
   "/",
   authMiddleware,
   requireRole("RESTAURANT_OWNER"),
+  validate({ body: ingredientBodySchema }),
   createIngredient,
 );
 

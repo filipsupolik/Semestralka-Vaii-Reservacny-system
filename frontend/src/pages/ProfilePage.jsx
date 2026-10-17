@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context";
 import { authService } from "../services";
 import { ROLE_LABELS, ROLE_COLORS } from "../constants/roles";
+import { PHONE_PLACEHOLDER } from "../constants/validation";
 
 function ProfileField({ label, value }) {
   return (
@@ -78,7 +79,11 @@ function ProfilePage() {
                 <ProfileField label="Email" value={profile.email} />
                 <ProfileField
                   label="Phone number"
-                  value={profile.phoneNumber}
+                  value={
+                    profile.phoneNumber === PHONE_PLACEHOLDER
+                      ? null
+                      : profile.phoneNumber
+                  }
                 />
                 <ProfileField
                   label="Role"

@@ -1,18 +1,11 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Typography,
-  Box,
-} from "@mui/material";
+import { Typography, Box } from "@mui/material";
 import { categoryService } from "../services";
 import { getImageUrl } from "../services/api";
 import ImagePicker from "./ImagePicker";
+import FormDialog from "./FormDialog";
+import FormTextField from "./FormTextField";
 
 const CategoryDialog = ({ open, onClose, category, onSaved }) => {
   const [name, setName] = useState("");
@@ -62,49 +55,41 @@ const CategoryDialog = ({ open, onClose, category, onSaved }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>{category ? "Edit Category" : "New Category"}</DialogTitle>
-      <DialogContent>
-        <Box component="form" className="mt-4">
-          <TextField
-            fullWidth
-            label="Category name"
-            value={name}
-            onChange={(e) => {
-              setName(e.target.value);
-              setError(null);
-            }}
-            className="mt-4 mb-2"
-            required
-            autoFocus
-          />
-          <ImagePicker
-            inputId="category-image"
-            preview={imagePreview}
-            onFileSelect={handleImageSelect}
-            onError={setError}
-            previewWrapperClassName="mt-4 flex justify-center"
-            previewClassName="h-24 w-24 rounded-lg object-cover"
-          />
-          {error && (
-            <Typography color="error" className="mt-2">
-              {error}
-            </Typography>
-          )}
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          color="primary"
-          disabled={isSaving}
-        >
-          {category ? "Save Changes" : "Create"}
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <FormDialog
+      open={open}
+      onClose={onClose}
+      title={category ? "Edit Category" : "New Category"}
+      onSubmit={handleSubmit}
+      submitLabel={category ? "Save Changes" : "Create"}
+      isSubmitting={isSaving}
+      maxWidth="xs"
+    >
+      <Box component="form" className="mt-4">
+        <FormTextField
+          label="Category name"
+          value={name}
+          onChange={(e) => {
+            setName(e.target.value);
+            setError(null);
+          }}
+          required
+          autoFocus
+        />
+        <ImagePicker
+          inputId="category-image"
+          preview={imagePreview}
+          onFileSelect={handleImageSelect}
+          onError={setError}
+          previewWrapperClassName="mt-4 flex justify-center"
+          previewClassName="h-24 w-24 rounded-lg object-cover"
+        />
+        {error && (
+          <Typography color="error" className="mt-2">
+            {error}
+          </Typography>
+        )}
+      </Box>
+    </FormDialog>
   );
 };
 

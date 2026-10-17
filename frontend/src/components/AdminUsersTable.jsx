@@ -1,5 +1,6 @@
 import SortableHeader from "./SortableHeader";
 import { ROLE_LABELS } from "../constants/roles";
+import { PHONE_PLACEHOLDER } from "../constants/validation";
 
 const COLUMNS = [
   { label: "Name", sortKey: "name" },
@@ -36,7 +37,9 @@ function AdminUsersTable({ users, sortConfig, onSort, onRowClick }) {
               {u.firstName} {u.lastName}
             </td>
             <td className="px-4 py-3">{u.email}</td>
-            <td className="px-4 py-3">{u.phoneNumber}</td>
+            <td className="px-4 py-3">
+              {u.phoneNumber === PHONE_PLACEHOLDER ? "—" : u.phoneNumber}
+            </td>
             <td className="px-4 py-3">{ROLE_LABELS[u.role] ?? u.role}</td>
             <td className="px-4 py-3">
               <span

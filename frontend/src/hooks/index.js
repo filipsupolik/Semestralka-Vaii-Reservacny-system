@@ -6,3 +6,5 @@ export {
 export { useCategories } from "./useCategories";
 export { useMenuItems, useMenuCategories } from "./useMenu";
 export { useOrders } from "./useOrders";
+export { default as useMenuItemForm } from "./useMenuItemForm";
+export { default as useRestaurantForm } from "./useRestaurantForm";

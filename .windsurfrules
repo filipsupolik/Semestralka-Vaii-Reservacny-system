@@ -7,3 +7,4 @@ Pravidlá pre kód:
 - Pri písaní backend kódu vždy ber ohľad na existujúcu schému v prisma/schema.prisma.
 - Express routy musia vracať presné JSON dátové štruktúry, aké očakáva frontend.
 - Používaj moderný a bezpečný JavaScript
+- Pre react componenty nepoužívaj sx props ale className s Tailwind CSS

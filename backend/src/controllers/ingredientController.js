@@ -14,10 +14,6 @@ async function createIngredient(req, res) {
   try {
     const { name } = req.body;
 
-    if (!name || !name.trim()) {
-      return res.status(400).json({ message: "Name is required" });
-    }
-
     const ingredient = await ingredientService.createIngredient(name);
     res.status(201).json(ingredient);
   } catch (error) {

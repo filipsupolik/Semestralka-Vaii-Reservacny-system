@@ -2,11 +2,6 @@ const fs = require("fs");
 const path = require("path");
 const restaurantService = require("../services/restaurantService");
 
-function parseRestaurantId(param) {
-  const restaurantId = parseInt(param, 10);
-  return Number.isNaN(restaurantId) ? null : restaurantId;
-}
-
 function unlinkImage(imageUrl) {
   if (!imageUrl) return;
   const filepath = path.join(__dirname, "..", "..", imageUrl);
@@ -23,11 +18,8 @@ async function getTop3(req, res) {
 // paginated restaurant list with optional name/category filters
 async function getRestaurants(req, res) {
   const { name, category } = req.query;
-  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-  const pageSize = Math.min(
-    50,
-    Math.max(1, parseInt(req.query.pageSize, 10) || 9),
-  );
+  const page = req.query.page || 1;
+  const pageSize = req.query.pageSize || 9;
 
   const { items, total } = await restaurantService.getRestaurants({
     name,
@@ -46,10 +38,7 @@ async function getRestaurants(req, res) {
 }
 
 async function getRestaurantById(req, res) {
-  const restaurantId = parseRestaurantId(req.params.restaurantId);
-  if (restaurantId === null) {
-    return res.status(400).json({ message: "Invalid restaurant id" });
-  }
+  const { restaurantId } = req.params;
 
   const restaurant = await restaurantService.getRestaurantById(restaurantId);
   if (!restaurant || restaurant.deletedAt) {
@@ -72,30 +61,8 @@ async function getMyRestaurants(req, res) {
   }
 }
 
-function parseCategories(rawCategories) {
-  let categories;
-  try {
-    categories = JSON.parse(rawCategories);
-  } catch {
-    return null;
-  }
-
-  if (!Array.isArray(categories) || categories.some((c) => !c)) {
-    return null;
-  }
-
-  return categories;
-}
-
 async function createRestaurant(req, res) {
-  const { name, address, description } = req.body;
-  const categories = parseCategories(req.body.categories);
-
-  if (!name || !address || !description || !categories) {
-    return res.status(400).json({
-      message: "Name, address, description, and categories are required",
-    });
-  }
+  const { name, address, description, categories } = req.body;
 
   const imageUrl = req.file
     ? `/uploads/restaurants/${req.file.filename}`
@@ -114,10 +81,7 @@ async function createRestaurant(req, res) {
 }
 
 async function updateRestaurant(req, res) {
-  const restaurantId = parseRestaurantId(req.params.restaurantId);
-  if (restaurantId === null) {
-    return res.status(400).json({ message: "Invalid restaurant id" });
-  }
+  const { restaurantId } = req.params;
 
   const restaurant = await restaurantService.getRestaurantById(restaurantId);
   if (!restaurant || restaurant.deletedAt) {
@@ -128,14 +92,7 @@ async function updateRestaurant(req, res) {
     return res.status(403).json({ message: "Forbidden" });
   }
 
-  const { name, address, description } = req.body;
-  const categories = parseCategories(req.body.categories);
-
-  if (!name || !address || !description || !categories) {
-    return res.status(400).json({
-      message: "Name, address, description, and categories are required",
-    });
-  }
+  const { name, address, description, categories } = req.body;
 
   const imageUrl = req.file
     ? `/uploads/restaurants/${req.file.filename}`
@@ -158,10 +115,7 @@ async function updateRestaurant(req, res) {
 }
 
 async function deleteRestaurant(req, res) {
-  const restaurantId = parseRestaurantId(req.params.restaurantId);
-  if (restaurantId === null) {
-    return res.status(400).json({ message: "Invalid restaurant id" });
-  }
+  const { restaurantId } = req.params;
 
   const restaurant = await restaurantService.getRestaurantById(restaurantId);
   if (!restaurant || restaurant.deletedAt) {

@@ -11,6 +11,12 @@ const {
   upload,
   processCategoryImage,
 } = require("../middleware/uploadMiddleware");
+const { validate } = require("../middleware/validateMiddleware");
+const {
+  categoryParamsSchema,
+  categoryCreateSchema,
+  categoryUpdateSchema,
+} = require("../schemas/categorySchemas");
 
 const categoryRouter = Router();
 
@@ -21,6 +27,7 @@ categoryRouter.post(
   requireRole("ADMIN"),
   upload.single("image"),
   processCategoryImage,
+  validate({ body: categoryCreateSchema }),
   addCategory,
 );
 categoryRouter.put(
@@ -29,12 +36,14 @@ categoryRouter.put(
   requireRole("ADMIN"),
   upload.single("image"),
   processCategoryImage,
+  validate({ params: categoryParamsSchema, body: categoryUpdateSchema }),
   updateCategory,
 );
 categoryRouter.delete(
   "/:categoryId",
   authMiddleware,
   requireRole("ADMIN"),
+  validate({ params: categoryParamsSchema }),
   deleteCategory,
 );
 

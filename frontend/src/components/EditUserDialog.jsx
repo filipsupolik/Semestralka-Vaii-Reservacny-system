@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
   Select,
   MenuItem,
   FormControl,
@@ -18,6 +12,13 @@ import {
 } from "@mui/material";
 import { userService } from "../services";
 import { ROLES } from "../constants/roles";
+import {
+  EMAIL_REGEX,
+  PHONE_REGEX,
+  PHONE_PLACEHOLDER,
+} from "../constants/validation";
+import FormDialog from "./FormDialog";
+import FormTextField from "./FormTextField";
 
 const EditUserDialog = ({ open, onClose, user, currentUserEmail, onSaved }) => {
   const [formData, setFormData] = useState({
@@ -37,7 +38,8 @@ const EditUserDialog = ({ open, onClose, user, currentUserEmail, onSaved }) => {
         firstName: user.firstName || "",
         lastName: user.lastName || "",
         email: user.email || "",
-        phoneNumber: user.phoneNumber || "",
+        phoneNumber:
+          user.phoneNumber === PHONE_PLACEHOLDER ? "" : user.phoneNumber || "",
         role: user.role || "CUSTOMER",
         isActive: user.isActive ?? true,
       });
@@ -58,14 +60,23 @@ const EditUserDialog = ({ open, onClose, user, currentUserEmail, onSaved }) => {
       setError("First and last name are required");
       return;
     }
-    if (!formData.email.trim()) {
-      setError("Email is required");
+    if (!EMAIL_REGEX.test(formData.email.trim())) {
+      setError("Invalid email format");
+      return;
+    }
+    const phoneNumber = formData.phoneNumber.trim();
+    if (phoneNumber && !PHONE_REGEX.test(phoneNumber)) {
+      setError("Invalid phone number format");
       return;
     }
 
     setIsSaving(true);
     try {
-      await userService.updateUser(user.userId, formData);
+      await userService.updateUser(user.userId, {
+        ...formData,
+        email: formData.email.trim(),
+        phoneNumber: phoneNumber || PHONE_PLACEHOLDER,
+      });
       onSaved();
       onClose();
     } catch (err) {
@@ -76,100 +87,85 @@ const EditUserDialog = ({ open, onClose, user, currentUserEmail, onSaved }) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Edit User</DialogTitle>
-      <DialogContent>
-        <Box component="form" className="mt-4">
-          <TextField
-            fullWidth
-            label="First name"
-            name="firstName"
-            value={formData.firstName}
+    <FormDialog
+      open={open}
+      onClose={onClose}
+      title="Edit User"
+      onSubmit={handleSubmit}
+      submitLabel="Save Changes"
+      isSubmitting={isSaving}
+    >
+      <Box component="form" className="mt-4">
+        <FormTextField
+          label="First name"
+          name="firstName"
+          value={formData.firstName}
+          onChange={handleInputChange}
+          required
+        />
+        <FormTextField
+          label="Last name"
+          name="lastName"
+          value={formData.lastName}
+          onChange={handleInputChange}
+          required
+        />
+        <FormTextField
+          label="Email"
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={handleInputChange}
+          required
+        />
+        <FormTextField
+          label="Phone number (optional)"
+          name="phoneNumber"
+          value={formData.phoneNumber}
+          onChange={handleInputChange}
+        />
+        <FormControl fullWidth className="mt-4 mb-2">
+          <InputLabel>Role</InputLabel>
+          <Select
+            name="role"
+            value={formData.role}
             onChange={handleInputChange}
-            className="mt-4 mb-2"
-            required
-          />
-          <TextField
-            fullWidth
-            label="Last name"
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleInputChange}
-            className="mt-4 mb-2"
-            required
-          />
-          <TextField
-            fullWidth
-            label="Email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleInputChange}
-            className="mt-4 mb-2"
-            required
-          />
-          <TextField
-            fullWidth
-            label="Phone number"
-            name="phoneNumber"
-            value={formData.phoneNumber}
-            onChange={handleInputChange}
-            className="mt-4 mb-2"
-          />
-          <FormControl fullWidth className="mt-4 mb-2">
-            <InputLabel>Role</InputLabel>
-            <Select
-              name="role"
-              value={formData.role}
-              onChange={handleInputChange}
-              label="Role"
-            >
-              {ROLES.map((role) => (
-                <MenuItem key={role} value={role}>
-                  {role}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={formData.isActive}
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    isActive: e.target.checked,
-                  }))
-                }
-                disabled={isSelf}
-              />
-            }
-            label={formData.isActive ? "Active" : "Inactive"}
-          />
-          {isSelf && (
-            <Typography variant="caption" color="text.secondary">
-              You cannot deactivate your own account
-            </Typography>
-          )}
-          {error && (
-            <Typography color="error" className="mt-2">
-              {error}
-            </Typography>
-          )}
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          color="primary"
-          disabled={isSaving}
-        >
-          Save Changes
-        </Button>
-      </DialogActions>
-    </Dialog>
+            label="Role"
+          >
+            {ROLES.map((role) => (
+              <MenuItem key={role} value={role}>
+                {role}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={formData.isActive}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  isActive: e.target.checked,
+                }))
+              }
+              disabled={isSelf}
+            />
+          }
+          label={formData.isActive ? "Active" : "Inactive"}
+        />
+        {isSelf && (
+          <Typography variant="caption" color="text.secondary">
+            You cannot deactivate your own account
+          </Typography>
+        )}
+        {error && (
+          <Typography color="error" className="mt-2">
+            {error}
+          </Typography>
+        )}
+      </Box>
+    </FormDialog>
   );
 };
 
