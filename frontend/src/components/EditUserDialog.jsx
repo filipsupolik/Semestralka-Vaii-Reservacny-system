@@ -95,10 +95,11 @@ const EditUserDialog = ({ open, onClose, user, currentUserEmail, onSaved }) => {
       submitLabel="Save Changes"
       isSubmitting={isSaving}
     >
-      <Box component="form" className="mt-4">
+      <Box component="form" className="mt-4 flex flex-col gap-4">
         <FormTextField
           label="First name"
           name="firstName"
+          placeholder="John"
           value={formData.firstName}
           onChange={handleInputChange}
           required
@@ -106,6 +107,7 @@ const EditUserDialog = ({ open, onClose, user, currentUserEmail, onSaved }) => {
         <FormTextField
           label="Last name"
           name="lastName"
+          placeholder="Doe"
           value={formData.lastName}
           onChange={handleInputChange}
           required
@@ -114,6 +116,7 @@ const EditUserDialog = ({ open, onClose, user, currentUserEmail, onSaved }) => {
           label="Email"
           name="email"
           type="email"
+          placeholder="john.doe@example.com"
           value={formData.email}
           onChange={handleInputChange}
           required
@@ -121,10 +124,11 @@ const EditUserDialog = ({ open, onClose, user, currentUserEmail, onSaved }) => {
         <FormTextField
           label="Phone number (optional)"
           name="phoneNumber"
+          placeholder="+421 900 123 456"
           value={formData.phoneNumber}
           onChange={handleInputChange}
         />
-        <FormControl fullWidth className="mt-4 mb-2">
+        <FormControl fullWidth>
           <InputLabel>Role</InputLabel>
           <Select
             name="role"

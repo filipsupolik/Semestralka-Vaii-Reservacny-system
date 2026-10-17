@@ -98,7 +98,7 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
                 <TextField
                   label="First name"
                   variant="standard"
-                  className="mt-4 mb-2"
+                  placeholder="John"
                   value={firstName}
                   onChange={(event) => setFirstName(event.target.value)}
                   required
@@ -106,7 +106,7 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
                 <TextField
                   label="Last name"
                   variant="standard"
-                  className="mt-4 mb-2"
+                  placeholder="Doe"
                   value={lastName}
                   onChange={(event) => setLastName(event.target.value)}
                   required
@@ -116,7 +116,7 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
             <TextField
               label="Email"
               variant="standard"
-              className="mt-4 mb-2"
+              placeholder="you@example.com"
               type="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
@@ -125,7 +125,11 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
             <TextField
               label="Password"
               variant="standard"
-              className="mt-4 mb-2"
+              placeholder={
+                isRegistering
+                  ? `At least ${PASSWORD_MIN_LENGTH} characters`
+                  : "Your password"
+              }
               type="password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
@@ -140,7 +144,7 @@ function LoginDialog({ isOpen, handleClose, onLogin }) {
               <TextField
                 label="Phone number (optional)"
                 variant="standard"
-                className="mt-4 mb-2"
+                placeholder="+421 900 123 456"
                 value={phoneNumber}
                 onChange={(event) => setPhoneNumber(event.target.value)}
               />

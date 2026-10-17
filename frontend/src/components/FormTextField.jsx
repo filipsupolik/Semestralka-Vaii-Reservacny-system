@@ -1,12 +1,7 @@
 import PropTypes from "prop-types";
 import { TextField } from "@mui/material";
 
-const FormTextField = ({
-  error,
-  helperText,
-  className = "mt-4 mb-2",
-  ...rest
-}) => (
+const FormTextField = ({ error, helperText, className = "", ...rest }) => (
   <TextField
     fullWidth
     error={!!error}

@@ -28,10 +28,11 @@ const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
       onSubmit={handleSubmit}
       submitLabel={restaurant ? "Update Restaurant" : "Create Restaurant"}
     >
-      <Box component="form" className="mt-4">
+      <Box component="form" className="mt-4 flex flex-col gap-4">
         <FormTextField
           label="Restaurant Name"
           name="name"
+          placeholder="e.g. La Trattoria"
           value={formData.name}
           onChange={handleInputChange}
           error={errors.name}
@@ -41,6 +42,7 @@ const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
         <FormTextField
           label="Address"
           name="address"
+          placeholder="e.g. Main Street 12, Bratislava"
           value={formData.address}
           onChange={handleInputChange}
           error={errors.address}
@@ -50,6 +52,7 @@ const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
         <FormTextField
           label="Description"
           name="description"
+          placeholder="Describe your restaurant"
           value={formData.description}
           onChange={handleInputChange}
           error={errors.description}
@@ -58,9 +61,7 @@ const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
           required
         />
 
-        <Typography variant="subtitle1" className="mt-4 mb-2">
-          Categories *
-        </Typography>
+        <Typography variant="subtitle1">Categories *</Typography>
         {isLoadingCategories ? (
           <CircularProgress size={24} />
         ) : (
@@ -88,9 +89,7 @@ const CreateRestaurantDialog = ({ open, onClose, onSubmit, restaurant }) => {
           </Typography>
         )}
 
-        <Typography variant="subtitle1" className="mt-4 mb-2">
-          Restaurant Image (Optional)
-        </Typography>
+        <Typography variant="subtitle1">Restaurant Image (Optional)</Typography>
         <ImagePicker
           inputId="restaurant-image"
           preview={imagePreview}

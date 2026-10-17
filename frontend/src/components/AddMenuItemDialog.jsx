@@ -46,10 +46,11 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
       onSubmit={handleSubmit}
       submitLabel={menuItem ? "Save Changes" : "Add Item"}
     >
-      <Box component="form" className="mt-4">
+      <Box component="form" className="mt-4 flex flex-col gap-4">
         <FormTextField
           label="Item Name"
           name="name"
+          placeholder="e.g. Margherita Pizza"
           value={formData.name}
           onChange={handleInputChange}
           error={errors.name}
@@ -59,6 +60,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
         <FormTextField
           label="Description"
           name="description"
+          placeholder="Describe the dish"
           value={formData.description}
           onChange={handleInputChange}
           error={errors.description}
@@ -71,6 +73,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
           label="Price (€)"
           name="price"
           type="number"
+          placeholder="0.00"
           inputProps={{ step: "0.01", min: "0" }}
           value={formData.price}
           onChange={handleInputChange}
@@ -78,11 +81,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
           required
         />
 
-        <FormControl
-          fullWidth
-          className="mt-4 mb-2"
-          error={!!errors.categoryId}
-        >
+        <FormControl fullWidth error={!!errors.categoryId}>
           <InputLabel>Category</InputLabel>
           {isLoadingCategories ? (
             <CircularProgress size={24} />
@@ -109,6 +108,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
           {formData.categoryId === "__new__" && (
             <QuickAddField
               label="New category name"
+              placeholder="e.g. Desserts"
               value={newCategoryName}
               onChange={setNewCategoryName}
               onAdd={handleCreateCategory}
@@ -123,11 +123,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
           )}
         </FormControl>
 
-        <FormControl
-          fullWidth
-          className="mt-4 mb-2"
-          error={!!errors.ingredients}
-        >
+        <FormControl fullWidth error={!!errors.ingredients}>
           <InputLabel>Ingredients</InputLabel>
           <Select
             multiple
@@ -150,6 +146,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
           </Select>
           <QuickAddField
             label="New ingredient name"
+            placeholder="e.g. basil"
             value={newIngredientName}
             onChange={setNewIngredientName}
             onAdd={handleCreateIngredient}
@@ -162,9 +159,7 @@ const AddMenuItemDialog = ({ open, onClose, menuItem = null, onSaved }) => {
           )}
         </FormControl>
 
-        <Typography variant="subtitle1" className="mt-4 mb-2">
-          Item Image (Optional)
-        </Typography>
+        <Typography variant="subtitle1">Item Image (Optional)</Typography>
         <ImagePicker
           inputId="menu-item-image"
           preview={imagePreview}

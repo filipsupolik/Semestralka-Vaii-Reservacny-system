@@ -3,6 +3,7 @@ import { TextField, Button } from "@mui/material";
 
 const QuickAddField = ({
   label,
+  placeholder,
   value,
   onChange,
   onAdd,
@@ -14,6 +15,7 @@ const QuickAddField = ({
       fullWidth
       size="small"
       label={label}
+      placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       autoFocus={autoFocus}
@@ -30,6 +32,7 @@ const QuickAddField = ({
 
 QuickAddField.propTypes = {
   label: PropTypes.string.isRequired,
+  placeholder: PropTypes.string,
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,

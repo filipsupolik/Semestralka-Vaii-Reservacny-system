@@ -64,9 +64,10 @@ const CategoryDialog = ({ open, onClose, category, onSaved }) => {
       isSubmitting={isSaving}
       maxWidth="xs"
     >
-      <Box component="form" className="mt-4">
+      <Box component="form" className="mt-4 flex flex-col gap-4">
         <FormTextField
           label="Category name"
+          placeholder="e.g. Italian"
           value={name}
           onChange={(e) => {
             setName(e.target.value);
@@ -80,7 +81,7 @@ const CategoryDialog = ({ open, onClose, category, onSaved }) => {
           preview={imagePreview}
           onFileSelect={handleImageSelect}
           onError={setError}
-          previewWrapperClassName="mt-4 flex justify-center"
+          previewWrapperClassName="flex justify-center"
           previewClassName="h-24 w-24 rounded-lg object-cover"
         />
         {error && (
