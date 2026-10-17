@@ -22,11 +22,15 @@ function validate({ body, params, query } = {}) {
           .json({ message: result.error.issues[0].message });
       }
 
-      if (key === "body") {
-        req.body = result.data;
-      } else {
-        Object.assign(req[key], result.data);
-      }
+      // req.query (and req.params on some setups) are getters returning a
+      // fresh object on every access, so assign an own property instead of
+      // mutating the returned object
+      Object.defineProperty(req, key, {
+        value: result.data,
+        writable: true,
+        configurable: true,
+        enumerable: true,
+      });
     }
 
     next();
